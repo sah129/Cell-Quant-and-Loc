@@ -1,9 +1,8 @@
-setwd("C:/Users/sarah/Desktop/Capstone/Main pipeline")
 
 source("src/functions.R")
 
 
-pipeline <- function(datasetpath, testing)#, progress)
+pipeline <- function(datasetpath, testing, gui, progress)
 {
   if(testing)
   {
@@ -14,21 +13,18 @@ pipeline <- function(datasetpath, testing)#, progress)
   results = list()
   for( row in 1:nrow(imageset))
   {
-
-   # progress$inc(1/nrow(imageset), detail = paste0(imageset[row,"file"], "(", row, "/",nrow(imageset),")" ))
+    if(gui)
+      progress$inc(1/nrow(imageset), detail = paste0(imageset[row,"file"], "(", row, "/",nrow(imageset),")" ))
     
     
     
     channels <- read_in_channels(imageset[row,], datasetpath)
-    img <- convert_to_grayscale(channels)
-    img <- scale_intensities(img)
-    cells <- detect_cells(img)
-  
-   # if(!(length(table(cells$membranes))) == length(table(cells$cell_bodies)) == length(table(cells$inner)))
-    #  print("PROBLEM")
+    imggray <- convert_to_grayscale(channels)
+   # img <- scale_intensities(imggray)  #problem -- refs/grayscale
+    cells <- detect_cells(imggray)
+
     
-    
-    res <- find_vacuoles(cells, img)
+    res <- find_vacuoles(cells, imggray)
 
     
     final <- display_output(res$membranes, channels$gfp, res$vacuoles, labeled = FALSE)
@@ -45,25 +41,32 @@ pipeline <- function(datasetpath, testing)#, progress)
     
     write_to_csv(res$FCM, imageset[row, "file"])
     
-  #  results[[row]] <- list(channels = channels, 
-   #                        #final = final,
-    #                       labels = labels,
-     #                      filename = imageset[row, "file"],
-                          # membranes = res$membranes,
-                           #vacuoles = res$vacuoles,
-      #                     mem_pts = ocontour(res$membranes),
-         #                  vac_pts = ocontour(res$vacuoles),
-       #                   removed_puts = ocontour(cells$removed),
-        #                   FCM = res$FCM)
+   
+      results[[row]] <- list(channels = channels, 
+                            #final = final,
+                            labels = labels,
+                             filename = imageset[row, "file"],
+                             membranes = res$membranes,
+                             vacuoles = res$vacuoles,
+                             mem_pts = ocontour(res$membranes),
+                             vac_pts = ocontour(res$vacuoles),
+                            removed_puts = ocontour(cells$removed),
+                            FCCI = res$FCCI,
+                          #  FCCB = res$FCCB,
+                            FV = res$FV,
+                            FCM = res$FCM)
+  
     gc()
   }
   message("End of main")
-
-  #return(results)
+ # if(gui)
+    return(results)
   }
 
+#hres <- pipeline("Datasets/Diploid/Demo_Diploid_Single", testing=FALSE, gui=FALSE, progress=NULL)
 
-#saveRDS(res, "Saved Results/demo_dataset_three.rds")
+#saveRDS(hres, "Saved Results/demo_diploid_single.rds")
+
 
 #res <- readRDS(file = 'results-04-03-2020.rds')
 

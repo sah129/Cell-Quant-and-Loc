@@ -11,7 +11,7 @@ get_mpi_table <- function(res)
    
     datatable(df, 
               class = 'cell-border stripe',
-              colnames = c( "Cell ID", "Mean Pixel Intensity"),
+              colnames = c( "Cell ID", "MPI"),
               options = list(
                 searching = FALSE,
                 lengthChange = FALSE,

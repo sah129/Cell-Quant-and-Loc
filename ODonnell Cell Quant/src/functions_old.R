@@ -108,6 +108,134 @@ create_masks <- function(img)
 
 }
 
+
+# First pass cell detection.  Objects are detected via blurring, simple threshholding, and noise removal.
+# The last 4 lines allow us to return only cells with a complete membrane detectable
+
+detect_cells_old <-function(img)
+{
+  message("########################CELLS########################")
+  
+  cells_blurred = gblur(img[,,gfp_channel], sigma = 2)
+  ct = thresh(cells_blurred, offset = 0.005)
+  
+  cm = bwlabel(ct)
+  FS = computeFeatures.shape(cm)
+  sel <- which(FS[,"s.area"] < 500)
+  membranes <-rmObjects(cm, sel)
+  
+  # membranes <- bwlabel(membranes)
+  
+  
+  cell_bodies <- fillHull(membranes)
+  cell_bodies <- bwlabel(cell_bodies)
+  
+  
+  FCCB <- computeFeatures.shape(cell_bodies)
+  
+  
+  
+  mask <- list(cell_bodies = cell_bodies, FCCB = FCCB)
+  
+  mask <- remove_odd_shapes(mask, img)
+  
+  cell_bodies <- mask$cell_bodies
+  FCCB <- mask$FCCB
+  
+  res <- remove_small_cells(cell_bodies, FCCB, img)
+  
+  cell_bodies <- res$cell_bodies
+  FCCB <- res$FCCB
+  
+  
+  cell_inner <- fillHull(membranes) - membranes
+  cell_inner <- bwlabel(cell_inner)
+  cell_inner <- fillHull(cell_inner)
+  
+  cell_inner <- cell_inner*cell_bodies
+  cell_inner <- bwlabel(cell_inner)
+  
+  
+  FCI <- computeFeatures.shape(cell_inner)
+  sel <- which(FCI[,"s.area"] < 500)
+  cell_inner <-rmObjects(cell_inner, sel)
+  
+  #  cell_inner <- bwlabel(cell_inner)
+  
+  
+  membranes <- cell_bodies - cell_inner
+  # membranes <- bwlabel(membranes)
+  
+  #FCM <- computeFeatures(membranes, ref = img[,,gfp_channel], xname = "membrane")
+  
+  
+  
+  FCCI <- computeFeatures.shape(cell_inner)
+  message(paste0("Number of cells detected on first pass: ", length(table(cell_bodies))))
+  message(paste0("Number of inner detected on first pass: ", length(table(cell_inner))))
+  
+  list(
+    cell_inner = cell_inner,
+    removed = mask$removed,
+    FCCI = FCCI, 
+    membranes = membranes, 
+    #FCM = FCM, 
+    cell_bodies = cell_bodies, 
+    FCCB = FCCB)
+  
+}
+
+
+# Function to compute circularity of a cell object
+circularity <- function(seg_num, FC) 
+{
+  4 * pi * ((FC[seg_num,"s.area"]) / (FC[seg_num,"s.perimeter"]^2))
+} 
+
+# Removes odd shapes (those with circularity less than 1.)  The circularity cuttoff can be played with,
+# 1 generally will be enough to remove budding cells.  
+remove_odd_shapes <- function(mask, img)
+{
+  circ <- lapply(1:length(table(mask$cell_bodies)) -1, circularity, FC = mask$FCCB)
+  
+  circ<-unlist(circ)
+  odd_shapes = which(circ < 1) #budding cells
+  message(paste0("Number of cells removed for being oddly shaped: ", length(odd_shapes)))
+  
+  removed_ind = which(!(seq(1, length(table(mask$cell_bodies))) %in% odd_shapes))
+  removed = rmObjects(mask$cell_bodies, removed_ind)
+  
+  cell_bodies <- rmObjects(mask$cell_bodies, odd_shapes)
+  cell_bodies <- bwlabel(cell_bodies)
+  FCCB <- computeFeatures.shape(cell_bodies)#(cell_bodies, ref = img[,,gfp_channel], xname = "seg")
+  
+  list(cell_bodies = cell_bodies, FCCB = FCCB, removed = removed)
+  
+  
+  
+  
+  
+}
+
+
+remove_small_cells <- function(cell_bodies, FCCB, img)
+{
+  
+  areas <- FCCB[,"s.area"]
+  cutoff <- mean(areas) - sd(areas)
+  small <- which(areas < cutoff)
+  message(paste0("Cutoff point for cell area (in pixels): ", format(cutoff, nsmall = 3)))
+  message(paste0("Number of cells removed for being below cutoff: ", length(small)))
+  cell_bodies <- rmObjects(cell_bodies, small)
+  
+  cell_bodies <- bwlabel(cell_bodies)
+  FCCB = computeFeatures.shape(cell_bodies)
+  list(cell_bodies = cell_bodies, FCCB = FCCB)
+  
+}
+
+
+
 create_cell_segments<- function(cells)
 {
   cb = gblur(cells[,,gfp_channel], sigma = 2)
@@ -127,6 +255,91 @@ create_cell_segments<- function(cells)
   return(cell_segments)
 
 }
+
+
+# If a cell has more than 1 vacuole detected, keeps the biggest one and removes all others.  Also removes cells with
+# no detected vacuoles.  After all removals features are recomputed.  This is by far the most computationally expensive function, and can be improved by 
+# refining the parameters used to detect the vacuoles.  Still a work in progress.  
+remove_multiples <- function(cell_info, vmask, img)
+{
+  
+  l = length(table(cell_info$cell_inner))
+  l = l-1
+  
+  
+  maxes <- vector("list", l)
+  empty_cells <- vector("list", l)
+  
+  for(i in seq(1:l))
+  {
+    
+    cseg = cell_info$cell_inner == i
+    vcount <- table(cseg*vmask)
+    vcount <- vcount[-1]
+    #message(vcount)
+    if( length(vcount) > 0)
+    {
+      
+      v <- as.numeric(names(as.list(vcount)))
+      # message(v)
+      vcount <- unname(vcount)
+      maxes[i] <- v[which(vcount == max(vcount))]
+    }
+    else
+    {
+      # message(paste0(i, " ZERO VCOUNT"))
+      empty_cells[i] = i
+    }
+  }
+  
+  empty_cells <- unlist(empty_cells)
+  
+  
+  message(paste0("Number of empty cells: ", length(empty_cells)))
+  maxes <- unlist(maxes)
+  extras <- which(!(seq(1:length(table(vmask)[-1])) %in% maxes))
+  
+  
+  
+  vmask <- rmObjects(vmask, extras)
+  vmask <- bwlabel(vmask)
+  
+  
+  # Not going to recompute features here for cell bodies/cell inner.  Can add that if needed but as of now it's not necessary and it will slow things down
+  # recomputation of membrane features is needed, however
+  
+  
+  
+  #remove empty cells
+  cell_inner <- rmObjects(cell_info$cell_inner, empty_cells)
+  cell_inner <- bwlabel(cell_inner)
+  #remove empty cells
+  cell_bodies <- rmObjects(cell_info$cell_bodies, empty_cells)
+  cell_bodies <- bwlabel(cell_bodies)
+  FCCI <- computeFeatures(cell_inner, ref = img[,,gfp_channel])
+  FCCB <- computeFeatures(cell_bodies, ref = img[,,gfp_channel])
+  
+  #remove empty membranes
+  #membranes <- rmObjects(cell_info$membranes, empty_cells)
+  # membranes <- bwlabel(membranes)
+  membranes = cell_bodies - cell_inner
+  
+  FCM <- computeFeatures(membranes, ref = img[,,gfp_channel], xname = "membrane")
+  FV <- computeFeatures(vmask, ref= img[,,gfp_channel], xname = "vac")
+  message(paste0("Number of cells after empty cells removed: ", length(table(cell_bodies))))
+  
+  list(vacuoles = vmask, 
+       membranes = membranes,
+       FCM = FCM,
+       #  FV = FV,
+       FCCB = FCCB,
+       cell_inner = cell_inner,
+       cell_bodies = cell_bodies,
+       FCCI = FCCI)
+}
+
+
+
 
 img_vac_seg <- function(cmac, cell_segments, masks)
 {
