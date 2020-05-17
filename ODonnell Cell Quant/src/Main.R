@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 
 source("src/functions.R")
 
@@ -20,28 +19,19 @@ pipeline <- function(datasetpath, testing, gui, progress)
     
     
     channels <- read_in_channels(imageset[row,], datasetpath)
-    imggray <- convert_to_grayscale(channels)
-   # img <- scale_intensities(imggray)  #problem -- refs/grayscale
-    cells <- detect_cells(imggray)
+    img_gray <- convert_to_grayscale(channels)
+    membranes <- detect_membranes(img_gray)
 
     
-    res <- find_vacuoles(cells, imggray)
+    vacuoles <- find_vacuoles(membranes, img_gray)
+    
+    df <- exclude_and_bind(membranes, vacuoles)
+    
+    res <- get_image_objects(membranes, vacuoles, df)
 
     
-    final <- display_output(res$membranes, channels$gfp, res$vacuoles, labeled = FALSE)
-    
-    labels <- roi_labels_demo(res$membranes, res$FCM)
-  
-    writeImage(x = final,
-               type = "tiff",
-               bits.per.sample = 16,
-               compression = "none",
-               quality = 100,
-               files = paste0("Output/",imageset[row, "file"], "_img.tiff"))
 
-    
-    write_to_csv(res$FCM, imageset[row, "file"])
-    
+
    
       results[[row]] <- list(channels = channels, 
                             #final = final,
@@ -146,4 +136,3 @@ pipeline <- function(datasetpath, testing, gui, progress)
 #res <- readRDS(file = 'results-04-03-2020.rds')
 
 
->>>>>>> a787f86eca1ccbda411758d1e2b020fbdf89d150
