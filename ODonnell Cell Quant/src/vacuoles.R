@@ -29,7 +29,7 @@ find_vacuoles <- function(cell_info, img)
 
 exclude_and_bind <- function(mems, vacs)
 {
-  oc <- ocontour(membranes$membranes)
+  oc <- ocontour(mems$membranes)
   left <- lapply(oc, function(x){min(x[,1])})
   right <- lapply(oc, function(x){max(x[,1])})
   top <- lapply(oc, function(x){min(x[,2])})
@@ -46,6 +46,7 @@ exclude_and_bind <- function(mems, vacs)
   
   for(i in seq(1:l))
   {
+   
     l<-left[[i]]
     r <-right[[i]]
     t<-top[[i]]

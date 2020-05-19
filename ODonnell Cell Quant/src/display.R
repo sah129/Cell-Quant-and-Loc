@@ -1,14 +1,14 @@
 
-get_display_img <- function(df,membranes, col_membranes, vacuoles, col_vacuoles, closed_vacuoles, img, showRemoved, showMemLabels, showVacLabels)
+get_display_img <- function(df,membranes, col_membranes, vacuoles, col_vacuoles, removed,closed_vacuoles, img, showRemoved, showMemLabels, showVacLabels)
 {
-  res_imgA <- paintObjects(membranes$membranes, tgt = img, col = c(col_membranes, col_membranes))
+  res_imgA <- paintObjects(membranes, tgt = img, col = c(col_membranes, col_membranes))
   vac_col <- col_vacuoles
   if(closed_vacuoles)
     vac_col <- c(col_vacuoles,col_vacuoles)
-  res_img <- paintObjects(vacuoles$vacuoles, tgt = res_imgA, col = vac_col)
+  res_img <- paintObjects(vacuoles, tgt = res_imgA, col = vac_col)
   if(showRemoved)
   {
-    res_img <- paintObjects(membranes$removed, tgt = res_img, col = c('red','red'))
+    res_img <- paintObjects(removed, tgt = res_img, col = c('red','red'))
   }
   
   plot(res_img)
@@ -35,6 +35,7 @@ get_display_img <- function(df,membranes, col_membranes, vacuoles, col_vacuoles,
 
 get_final_pm_img <- function(mems, res)
 {
+  r = mems$membranes
   if(is.null(res$empty_cells))
     r <- rmObjects(mems$membranes, res$empty_cells)
   return(r)
@@ -44,7 +45,7 @@ get_final_pm_img <- function(mems, res)
 get_final_vac_img <- function(vacs, res)
 {
   vac_df <- drop_na(res$df["vacuoles"])
-  l <- length(table(vacuoles$vacuoles)[-1])
+  l <- length(table(vacs$vacuoles)[-1])
   vac_list <- vector('list', l)
   i=1
   for(v in vac_df)
@@ -60,7 +61,7 @@ get_final_vac_img <- function(vacs, res)
       }
     }
     vac_list <- unlist(vac_list)
-    removedvacs <- which(!(seq(1:length(table(vacuoles$vacuoles)[-1])) %in% vac_list))
+    removedvacs <- which(!(seq(1:length(table(vacs$vacuoles)[-1])) %in% vac_list))
     
   }
   res_vacs <- rmObjects(vacs$vacuoles, removedvacs)
