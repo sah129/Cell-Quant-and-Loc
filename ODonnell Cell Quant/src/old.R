@@ -894,3 +894,101 @@ detect_cells_new_old <-function(img)
     FCCB = res$FCCB)
   
 }
+
+exclude_and_bind_old <- function(mems, vacs)
+{
+  
+  df <- data.frame(matrix(NA, nrow = length(table(mems$membranes)), ncol = 7))
+  names(df) <- c('CellID', 'vacuoles', 'cell_area', 'vac_area', 'PM_vac_ratio', 'cell_mpi', 'vac_mpi')
+  
+  
+  l = length(table(mems$membranes))
+  l = l-1
+  
+  fragments <- vector("list", l)
+  empty_cells <- vector("list", l)
+  
+  for(i in seq(1:l))
+  {
+    seg <- mems$membranes == i
+    inner = fillHull(seg)
+    if(all(seg == inner))
+    {
+      # print(paste0('hi ', i))#fragments[i] == i
+      fragments[i] = as.numeric(i)
+    }
+    else
+    {
+      vcount <- table(inner*vacs$vacuoles)
+      vcount <- vcount[-1] 
+      if( length(vcount) == 0 )
+      {
+        # message(paste0(i, " ZERO VCOUNT"))
+        empty_cells[i] = i
+      }
+      else
+      {
+        ca <- mems$FM[i, 'membrane.0.s.area']
+        va <- calc_vac_areas(as.numeric(names(vcount)), vacs$FV)
+        #do null checking
+        df[i,] <- list(CellID = i,
+                       vacuoles = toString(names(vcount)),
+                       cell_area = ca,
+                       vac_area = va,
+                       PM_vac_ratio = ca/va,
+                       cell_mpi = mems$FM[i, 'membrane.a.b.mean'],
+                       vac_mpi = calc_vac_mpi(as.numeric(names(vcount)), vacs$FV))
+        }
+    }
+  }
+  list(df=df, fragments = fragments, empty_cells = empty_cells)
+}
+
+
+
+
+
+get_display_img_old <- function(membranes, col_membranes, vacuoles, col_vacuoles, closed_vacuoles, img, showRemoved, showMemLabels, showVacLabels)
+{
+  res_imgA <- paintObjects(membranes$membranes, tgt = img, col = c(col_membranes, col_membranes))
+  vac_col <- col_vacuoles
+  if(closed_vacuoles)
+    vac_col <- c(col_vacuoles,col_vacuoles)
+  res_img <- paintObjects(vacuoles$vacuoles, tgt = res_imgA, col = vac_col)
+  if(showRemoved)
+  {
+    res_img <- paintObjects(membranes$removed, tgt = res_img, col = c('red','red'))
+  }
+  
+  plot(res_img)
+  if(showMemLabels)
+  {
+    labs <- get_labels(membranes$membranes, membranes$FM, 'membrane')
+    text(x = labs$label_pts[,"membrane.0.m.cx"], 
+         y = labs$label_pts[,"membrane.0.m.cy"], 
+         labels = labs$labels, 
+         col = "red", 
+         pos = c(2,3), 
+         vfont = c("sans serif", "bold"))
+  }
+  if(showVacLabels)
+  {
+    labs <- get_labels(vacuoles$vacuoles, vacuoles$FV, 'vac')
+    text(x = labs$label_pts[,"vac.0.m.cx"], 
+         y = labs$label_pts[,"vac.0.m.cy"], 
+         labels = labs$labels, 
+         col = "orange", 
+         pos = c(2,3), 
+         vfont = c("sans serif", "bold"))
+  }
+}
+
+get_labels_old <- function(objects, FM, xname) # change to make FV/FMS -> FM
+{
+  label_pts = FM[, c(paste0(xname,".0.m.cx"), paste0(xname, ".0.m.cy"))]
+  labels <- as.numeric(names(table(objects)[-1]))
+  list(labels = labels, label_pts = label_pts)
+}
+
+
+

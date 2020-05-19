@@ -12,31 +12,30 @@ detect_membranes <-function(img)
   membranes <-rmObjects(cm, sel)
   
   
-  res <- remove_edge_membranes(membranes, dim(img[,,cmac_channel]))
-  FM <- computeFeatures(membranes, ref = img[,,gfp_channel], xname = "membrane")
-  
+  res <- remove_edge_membranes(membranes, img)
+
   
   
   
   
   message(paste0("Number of cells detected on first pass: ", length(table(membranes))))
   
-  list(removed = res$removed, membranes = res$membranes, FM = FM)
+  list(removed = res$removed, membranes = res$membranes, FM = res$FM)
   
 }
 
 
 
-remove_edge_membranes <-function(membranes,dim_img)
+remove_edge_membranes <-function(membranes,img)
 {
   
   
   
   contours <- ocontour(membranes)
   bound <- list(l = 3,
-                r = dim_img[1]-3,
+                r = dim(img[,,gfp_channel])[1]-3,
                 t = 3,
-                b = dim_img[2]-3)
+                b = dim(img[,,gfp_channel])[2]-3)
   # find more efficient way to do this
   left <- lapply(contours, function(x){min(x[,1])})
   right <- lapply(contours, function(x){max(x[,1])})
@@ -52,8 +51,10 @@ remove_edge_membranes <-function(membranes,dim_img)
   
   membranes <- rmObjects(membranes, edge_cells)
   membranes <- bwlabel(membranes)
+  FM <- computeFeatures(membranes, ref = img[,,gfp_channel], xname = "membrane")
   
-  list(removed = removed, membranes = membranes)
+  
+  list(removed = removed, membranes = membranes, FM = FM)
   
 }
 
