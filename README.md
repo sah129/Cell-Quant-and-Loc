@@ -1,13 +1,6 @@
 # Cell-Quant-and-Loc
 CellQuantAndLoc quantifies yeast cell protein locations at the cell membrane and vacuolar level.  
 
-## Requirements
-1.  Input format should be 3 TIFF files for CMAC, GFP, and DIC channels. Working on .nd2 compatibility.
-
-2.  R 3.6.2 or greater
-
-3.  Packages: Bioconductor::EBImage, R-Shiny
-
 ## Pipeline Overview
 
 1.  **Preprocessing**:  conversion to grayscale and normalization of all channels.
@@ -39,3 +32,9 @@ CellQuantAndLoc quantifies yeast cell protein locations at the cell membrane and
 ![Output log](/images/output-log.png)
 
 
+### Requirements
+1.  **Input**: CMAC, GFP, and DIC .tif files. Working on .nd2 compatibility.
+
+2.  **R 3.6.2** or greater
+
+3.  **Packages**: Bioconductor::EBImage, R-Shiny
