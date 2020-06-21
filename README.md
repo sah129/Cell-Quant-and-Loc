@@ -1,4 +1,4 @@
-# Cell-Quant-and-Loc
+# CellQuantAndLoc
 CellQuantAndLoc quantifies yeast cell protein locations at the cell membrane and vacuolar level.  
 
 ## Pipeline Overview
@@ -33,7 +33,7 @@ CellQuantAndLoc quantifies yeast cell protein locations at the cell membrane and
 
 
 ### Requirements
-1.  **Input**: CMAC, GFP, and DIC .tif files. Working on .nd2 compatibility.
+1.  **Input Format**: CMAC, GFP, and DIC .tif files. Working on .nd2 compatibility.
 
 2.  **R 3.6.2** or greater
 
