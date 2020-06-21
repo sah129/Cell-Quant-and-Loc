@@ -4,11 +4,11 @@ detect_membranes <-function(img)
   message("########################CELLS########################")
   
   cells_blurred = gblur(img[,,gfp_channel], sigma = 2)
-  ct = thresh(cells_blurred, offset = 0.005)
+  ct = thresh(cells_blurred, offset = 0.002)
   
   cm = bwlabel(ct)
   FS = computeFeatures.shape(cm)
-  sel <- which(FS[,"s.area"] < 500)
+  sel <- which(FS[,"s.area"] < 600)
   membranes <-rmObjects(cm, sel)
   
   

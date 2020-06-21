@@ -49,17 +49,26 @@ add_result_ui <-function()
                    
                       #displayOutput("img_result")),
                     mainPanel(plotOutput("img_result_plot"),align="left", width = 4))),
-             tabPanel("Summary", fluidRow(br(),
-                                          column(3, uiOutput("sum_text")), 
-                                          column(7, plotOutput("sum_hist")))),
-             tabPanel("Explore Saved ResFile", fluidRow(br(),
-                                          column(7, displayOutput('labeled_img_ex')))),
+            # tabPanel("Summary", fluidRow(br(),
+             #                             column(3, uiOutput("sum_text")), 
+              #                            column(7, plotOutput("sum_hist")))),
+             tabPanel("FIJI Comparison", fluidRow(br(),
+                                          column(4, displayOutput('labeled_img_ex')),
+                                          column(3, displayOutput('fiji_results')))),
              tabPanel("Table", fluidRow(
                                         br(),
-                                        column(4, br(), displayOutput("labeled_img")), 
-                                        column(3,DTOutput("mpi_table")))),
+                                        column(5, br(), displayOutput("labeled_img")), 
+                                        column(5,DTOutput("mpi_table")))),
              tabPanel("Log", verbatimTextOutput("results_log"))),
     ))
+  })
+}
+get_fiji_result <- function(res)
+{
+  renderDisplay({
+    filename = paste0("Fiji Results/",res$filename, "_fiji.png")
+    img_fiji <- readImage(file.path(filename))
+    display(img_fiji, method = 'browser')
   })
 }
 get_image_plot <-function(res, sel, chan)
@@ -118,6 +127,15 @@ get_image_plot <-function(res, sel, chan)
     })
 
   
+}
+
+get_fiji_comparison <- function(res)
+{
+  renderDisplay({
+    t <- paintObjects(res$membranes, tgt = res$channels$gfp, col = c('white','white'))
+    tt <- paintObjects(res$vacuoles, tgt = t, col = 'yellow')
+    display(tt, method = "browser")
+  })
 }
 
 get_final_labeled <- function(res)

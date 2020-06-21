@@ -1,0 +1,78 @@
+
+```{r}
+source('src/functions.R')
+datasetpath <- 'Datasets/Diploid/Diploid_Dataset_all/SecondThree'
+```
+
+```{r}
+imageset <- read_in_imageset(datasetpath)
+channels <- read_in_channels(imageset[1,], datasetpath)
+img_gray <- convert_to_grayscale(channels)
+membranes <- detect_membranes(img_gray)
+vacuoles <- find_vacuoles(membranes, img_gray)
+res <- exclude_and_bind(membranes, vacuoles)
+final<-tidy_up(membranes,vacuoles,res)
+```
+
+```{r}
+fiji_analog <- function(final, channels)
+{
+  t <- paintObjects(final$membranes, tgt = channels$gfp, col = c('yellow','yellow'))
+  tt<- paintObjects(final$vacuoles, tgt = t, col = 'yellow')
+}
+```
+
+
+```{r}
+get_display_img(df = final$df,
+                membranes = final$membranes, 
+                col_membranes = 'white', 
+                vacuoles = final$vacuoles, 
+                col_vacuoles ='yellow', 
+                removed = membranes$removed,
+                closed_vacuoles = TRUE, 
+                img = channels$gfp, 
+                showRemoved = FALSE, 
+                showMemLabels = TRUE, 
+                showVacLabels = FALSE)
+```
+
+```{r}
+final$df
+```
+
+
+```{r}
+res$df
+
+```
+
+```{r}
+tiff(filename = 'testing.tiff')
+get_display_img(df = final$df,
+                membranes = final$membranes, 
+                col_membranes = 'white', 
+                vacuoles = final$vacuoles, 
+                col_vacuoles ='blue', 
+                removed = membranes$removed,
+                closed_vacuoles = TRUE, 
+                img = channels$gfp, 
+                showRemoved = TRUE, 
+                showMemLabels = TRUE, 
+                showVacLabels = TRUE)
+dev.off()
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+

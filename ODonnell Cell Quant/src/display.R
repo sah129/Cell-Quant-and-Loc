@@ -36,8 +36,10 @@ get_display_img <- function(df,membranes, col_membranes, vacuoles, col_vacuoles,
 get_final_pm_img <- function(mems, res)
 {
   r = mems$membranes
-  if(is.null(res$empty_cells))
-    r <- rmObjects(mems$membranes, res$empty_cells)
+  if(!is.null(res$empty_cells))
+    r <- rmObjects(mems$membranes, res$empty_cells, reenumerate = FALSE)
+  if(!is.null(res$fragments))
+    r <- rmObjects(r, res$fragments)
   return(r)
 }
 

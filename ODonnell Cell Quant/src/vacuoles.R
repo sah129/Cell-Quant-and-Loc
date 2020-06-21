@@ -16,6 +16,11 @@ find_vacuoles <- function(cell_info, img)
   
   message(paste0("Number of vacuoles after segmask: ", length(table(vmask))))
   
+  #FVC = computeFeatures(vmask, ref = img[,,cmac_channel], xname = "vac")
+  #dim <- which(FVC[,"vac.a.b.mean"] < quantile(FVC[,"vac.a.b.mean"], 0.2) )
+  #vmask = rmObjects(vmask, dim)
+  
+  
   FV <- computeFeatures(vmask, ref= img[,,gfp_channel], xname = "vac")
   
   res<-list(vacuoles = vmask, 
@@ -43,20 +48,23 @@ exclude_and_bind <- function(mems, vacs)
   l = l-1
   
   empty_cells <- vector("list", l)
+  fragments <- vector("list", l)
   
   for(i in seq(1:l))
   {
-   
-    l<-left[[i]]
-    r <-right[[i]]
-    t<-top[[i]]
-    b<-bottom[[i]]
-    pm_seg <- mems$membranes[l:r,t:b]
-    v_seg <-vacs$vacuoles[l:r,t:b]
-    if(all(pm_seg*v_seg) == 0 ) #no overlap
+
+    pm_seg = mems$membranes == i
+    filled_seg = fillHull(pm_seg)
+    if(all(pm_seg == filled_seg))
     {
-      
-      
+      fragments[i] = i
+    }
+    else
+    {
+    
+      v_seg <-vacs$vacuoles*filled_seg
+    
+        
       vcount <- table(v_seg)
       vcount <- vcount[-1] 
       if( length(vcount) == 0 )
@@ -66,25 +74,26 @@ exclude_and_bind <- function(mems, vacs)
       }
       else
       {
-        ca <- mems$FM[i, 'membrane.0.s.area']
-        va <- calc_vac_areas(as.numeric(names(vcount)), vacs$FV)
+        cmpi <- mems$FM[i, 'membrane.a.b.mean']
+        vmpi <- calc_vac_mpi(as.numeric(names(vcount)), vacs$FV)
         #do null checking
         df[i,] <- list(CellID = i,
                        vacuoles = toString(names(vcount)),
-                       cell_area = ca,
-                       vac_area = va,
-                       PM_vac_ratio = ca/va,
-                       cell_mpi = mems$FM[i, 'membrane.a.b.mean'],
-                       vac_mpi = calc_vac_mpi(as.numeric(names(vcount)), vacs$FV),
+                       cell_area =  mems$FM[i, 'membrane.0.s.area'],
+                       vac_area = calc_vac_areas(as.numeric(names(vcount)), vacs$FV),
+                       PM_vac_ratio = cmpi/vmpi,
+                       cell_mpi = cmpi,
+                       vac_mpi = vmpi,
                        pm_center_x = mems$FM[i,'membrane.0.m.cx'],
                        pm_center_y = mems$FM[i,'membrane.0.m.cy'])
         
         
       }
+    
     }
     
   }
-  list(df=df, empty_cells = unlist(empty_cells))
+  list(df=df, fragments = unlist(fragments), empty_cells = unlist(empty_cells))
 }
 
 calc_vac_areas <- function(areas, FV)

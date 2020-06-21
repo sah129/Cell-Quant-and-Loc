@@ -3,6 +3,7 @@
 library("EBImage")
 library("genefilter")
 library("stringr")
+library("tidyr")
 source("src/cells.R")
 source("src/vacuoles.R")
 source("src/preprocessing.R")
