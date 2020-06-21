@@ -30,4 +30,10 @@ CellQuantAndLoc quantifies yeast cell protein locations at the cell membrane and
 6.  **Visualization**.  Pipeline can be run in R-shiny or, for quick viewing of results, can be saved as a .RDS file which can be read into the visualization tool.
 
 
-![PM localizations](/images/output-running.png)
+![Output Running](/images/output-running.png)
+
+![Summarized Result](/images/output1.png)
+
+![Table](/images/table.png)
+
+

@@ -15,7 +15,7 @@ source("src/shiny_functions.R")
 ui <- fluidPage(
   shinyjs::useShinyjs(),
   
-  titlePanel( h1( "Capstone 2020 O'Donnell Lab", align = "center") , windowTitle = "Capstone  2020 O'Donnell Lab"),
+  titlePanel( h1( "CellQuantAndLoc: O'Donnell Lab", align = "center") , windowTitle = "Capstone  2020 O'Donnell Lab"),
   fluidRow(
     column(11,  shinyDirButton('datasetpath', 'Select a directory containing the images for the pipeline', 'Please select a folder', FALSE, style = "width: 95%"), align = "center"),
         
@@ -56,7 +56,7 @@ server <- function(input, output,session)
       {
           shinyjs::html("stream_main", "")
           progress$set(message = "Running pipeline...", value = 0)
-          v$res <- pipeline(dpath(),testing=FALSE, gui=TRUE, progress=progress) #dpath()!!!
+          v$res <- pipeline(dpath(),testing=TRUE, gui=TRUE, progress=progress) #dpath()!!!
           output$stream_main <- renderText("")
           output$results <- add_result_ui()
 

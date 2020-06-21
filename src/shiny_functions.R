@@ -66,7 +66,7 @@ add_result_ui <-function()
 get_fiji_result <- function(res)
 {
   renderDisplay({
-    filename = paste0("Fiji Results/",res$filename, "_fiji.png")
+    filename = paste0("Demo/Fiji Results/",res$filename, "_fiji.png")
     img_fiji <- readImage(file.path(filename))
     display(img_fiji, method = 'browser')
   })
@@ -141,7 +141,7 @@ get_fiji_comparison <- function(res)
 get_final_labeled <- function(res)
 {
   renderDisplay({
-   filename = paste0("Output/",res$filename, "_final_results.tiff")
+   filename = paste0("Demo/Output/",res$filename, "_final_results.tiff")
    img_final <- readImage(file.path(filename))
    display(img_final, method = 'browser')
   })

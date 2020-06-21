@@ -6,7 +6,7 @@ pipeline <- function(datasetpath, testing, gui, progress)
 {
   if(testing)
   {
-    return(readRDS("Saved Results/presentation_results.rds"))
+    return(readRDS("Demo/Saved Results/presentation_results.rds"))
   }
 
   imageset <- read_in_imageset(datasetpath)
