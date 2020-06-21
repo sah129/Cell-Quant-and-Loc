@@ -36,6 +36,6 @@ CellQuantAndLoc quantifies yeast cell protein locations at the cell membrane and
 
 ![Table](/images/table.png)
 
-[!Output log](/images/output-log.png)
+![Output log](/images/output-log.png)
 
 
