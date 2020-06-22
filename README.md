@@ -20,7 +20,7 @@ CellQuantAndLoc quantifies yeast cell protein locations at the cell membrane and
 
 5.  **Output**.  Final output is exported to a .csv file.
 
-6.  **Visualization**.  Pipeline can be run entirely in the Results Visualization Web App.  Results can also be saved as a .RDS file and read into the Visualization App for quick processing as well.
+6.  **Visualization**.  Pipeline can be run entirely in the CellQuantAndLoc Visualization Tool.  Results can also be saved as a .RDS file and read into the visualization tool for quick processing.
 
 
 
