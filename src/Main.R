@@ -71,12 +71,12 @@ pipeline_git1 <- function(datasetpath, testing, gui, progress)
     return(readRDS("Demo/Saved Results/presentation_results.rds"))
   }
   
-  imageset <- read_in_imageset_git1(datasetpath)
+  imageset <- read_in_imageset_git1_tiffs(datasetpath)
   results = list()
   for( row in 1:nrow(imageset))
   {
     if(gui)
-      progress$inc(1/nrow(imageset), detail = paste0(imageset[row,"file"], "(", row, "/",nrow(imageset),")" ))
+      progress$inc(1/nrow(imageset), detail = paste0(imageset[row,"filename"], "(", row, "/",nrow(imageset),")" ))
     
     channels <- read_in_channels_git1(imageset[row,], datasetpath)
     img_gray <- convert_to_grayscale_git1(channels)
@@ -88,7 +88,7 @@ pipeline_git1 <- function(datasetpath, testing, gui, progress)
     #writeImage(fillHull(final$membranes),paste0("Masks/",imageset[row, "file"], "_pm_mask.png"), type = "png", quality = 100)
     
     
-    tiff(filename = paste0("Git1Output/",imageset[row, "file"], "_final_results.tiff"))
+    tiff(filename = paste0("Git1Output/",imageset[row, "filename"], "_final_results.tiff"))
     
     get_display_img(df = final$df,
                     membranes = final$membranes, 
@@ -103,11 +103,11 @@ pipeline_git1 <- function(datasetpath, testing, gui, progress)
                     showVacLabels = FALSE)
     dev.off()
     
-    write.csv(final$df, paste0("Git1Output/",imageset[row, "file"], '_results.csv'), row.names=FALSE)
+    write.csv(final$df, paste0("Git1Output/",imageset[row, "filename"], '_results.csv'), row.names=FALSE)
     results[[row]] <- list(df = final$df,
                            img_gray = img_gray,
                            channels = channels, 
-                           filename = imageset[row, "file"],
+                           filename = imageset[row, "filename"],
                            membranes = final$membranes,
                            vacuoles = final$vacuoles,
                            mem_pts = ocontour(final$membranes),

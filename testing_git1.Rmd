@@ -3,3 +3,111 @@
 source('src/functions.R')
 source('src/Main.R')
 ```
+
+
+```{r}
+res <- pipeline_git1("Datasets/Unanalyzed", testing=FALSE, gui=FALSE, progress=NULL)
+```
+
+
+```{r}
+df_pm_mpi <- data.frame(Image = character())
+df_vac_mpi <- data.frame(Image = character())
+df_pm_vac_ratio <- data.frame(Image = character())
+
+```
+
+
+
+```{r}
+fill_df <- function(res, df, category)
+{
+  for(i in 1:length(res))
+  {
+    
+    df_row <- data.frame(t(res[[i]]$df[category]), row.names=NULL)
+    colnames(df_row) <-  t(res[[i]]$df["CellID"])
+    
+    
+    df_row <- cbind(Image = res[[i]]$filename[[1]], df_row)
+    df <- merge(df, df_row, all.x = TRUE, all.y= TRUE)
+  }
+  return(df)
+}
+```
+
+
+```{r}
+df_pm_mpi <- fill_df(res,df_pm_mpi, "cell_mpi")
+df_vac_mpi <- fill_df(res,df_vac_mpi, "vac_mpi")
+df_pm_vac_ratio <- fill_df(res,df_pm_vac_ratio, "PM_vac_ratio")
+```
+
+```{r}
+
+write.csv(t(df_pm_mpi), paste0("Results-Unanalyzed/pm_mpi_final.csv"), na = "", row.names = FALSE)
+write.csv(t(df_vac_mpi), paste0("Results-Unanalyzed/vac_mpi_final.csv"), na = "", row.names = FALSE)
+write.csv(t(df_pm_vac_ratio), paste0("Results-Unanalyzed/pm_vac_ratio_final.csv"), na = "", row.names = FALSE)
+
+```
+
+
+
+
+```{r}
+t(df_pm_mpi)
+```
+
+
+##############################################################3
+
+
+
+```{r}
+get_image_names <- function(res)
+{
+  image_names = vector(mode = "list",length = length(res))
+  for(i in 1:length(res))
+  {
+    image_names[i] <- res[[i]]$filename
+  }
+  return(image_names)
+}
+```
+
+
+
+
+```{r}
+get_max_cells <- function(res)
+{
+  max = -1
+  for(i in 1:length(res))
+  {
+    if( max < nrow(res[[i]]$df["cell_mpi"]))
+      max = nrow(res[[i]]$df["cell_mpi"])
+  }
+  return(max)
+}
+
+```
+
+
+```{r}
+max_cells <- get_max_cells(res)
+
+```
+```{r}
+#
+#ids <- vector("list", max_cells)
+#for(j in 1:max_cells)
+#{
+#  x <- data.frame(NA)
+ # names(x) <- j
+  #ids[[j]]<- x
+#}
+#df_cell_mpi <- cbind(df_cell_mpi, ids)
+#df_cell_mpi
+```
+
+

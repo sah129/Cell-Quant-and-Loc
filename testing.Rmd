@@ -1,12 +1,17 @@
 
 ```{r}
 source('src/functions.R')
-datasetpath <- 'Datasets/git1samp2'
+datasetpath <- 'Datasets/converted'
+```
+
+
+```{r}
+imageset <- read_in_imageset_git1_tiffs(datasetpath)
+channels <- read_in_channels_git1(imageset[1,], datasetpath)
 ```
 
 ```{r}
-imageset <- read_in_imageset_git1(datasetpath)
-channels <- read_in_channels_git1(imageset[1,], datasetpath)
+
 img_gray <- convert_to_grayscale_git1(channels)
 membranes <- detect_membranes_git1(img_gray)
 

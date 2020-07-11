@@ -69,6 +69,24 @@ read_in_imageset_git1 <- function(datapath)
   return(imagesets)
 }
 
+read_in_imageset_git1_tiffs <- function(datapath)
+{
+  
+  files <- list.files(path = datapath)
+
+  imagesets <- matrix(NA, length(files), 2)
+  colnames(imagesets) <- c("filepath", "filename")
+  
+  for(file in seq_along(files))
+  {
+    imagesets[file,"filename"] = str_remove(files[file], ".tif")
+    
+    imagesets[file,"filepath"]= files[file]
+    
+    
+  }
+  return(imagesets)
+}
 
 
 
@@ -96,15 +114,15 @@ read_in_channels <- function(imageset, datasetpath)
 read_in_channels_git1 <- function(imageset, datasetpath)
 {
   message("#####################################################")
-  message(paste0("Examining image: ", imageset["file"]))
+  message(paste0("Examining image: ", imageset["filename"]))
   gfp_path=paste0(datasetpath, "/", imageset["file"], "/", imageset["gfp"])
   cmac_path=paste0(datasetpath, "/", imageset["file"], "/", imageset["cmac"])
   
   
   
   
-  gfp = readImage(file.path(gfp_path))
-  cmac = readImage(file.path(cmac_path))
+  gfp = readImage(file.path(paste0(datasetpath, "/", imageset["filepath"])))[,,2]
+  cmac = readImage(file.path(paste0(datasetpath, "/", imageset["filepath"])))[,,1]
   
   list(cmac = cmac, gfp = gfp)
   
