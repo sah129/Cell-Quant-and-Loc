@@ -1,6 +1,6 @@
 get_mpi_table <- function(res)
 {
-  renderDT({res$df
+  renderDT({res$df %>% select(1:7)
     
   }, rownames=FALSE)
 }

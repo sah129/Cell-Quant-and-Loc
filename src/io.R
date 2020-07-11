@@ -40,6 +40,35 @@ read_in_imageset <- function(datapath)
   return(imagesets)
 }
 
+read_in_imageset_git1 <- function(datapath)
+{
+  
+  dirs <- list.dirs(path = datapath)
+  dirs <- dirs[-1]
+  
+  imagesets <- matrix(NA, length(dirs), 3)
+  colnames(imagesets) <- c("file", "cmac", "gfp")
+  
+  for(dir in seq_along(dirs))
+  {
+    imagesets[dir,"file"] = str_remove(dirs[dir], paste0(datapath, "/"))
+    
+    
+    imagesets[dir, "cmac"] <- list.files(
+      path = file.path(dirs[dir]),
+      pattern='.*?cmac\\.png',
+      ignore.case = TRUE)
+    
+    imagesets[dir, "gfp"] <- list.files(
+      path = file.path(dirs[dir]),
+      pattern='.*?gfp\\.png',
+      ignore.case = TRUE)
+  
+    
+  }
+  return(imagesets)
+}
+
 
 
 
@@ -62,6 +91,25 @@ read_in_channels <- function(imageset, datasetpath)
   list(cmac = cmac, gfp = gfp, dic = dic)
   
 }
+
+
+read_in_channels_git1 <- function(imageset, datasetpath)
+{
+  message("#####################################################")
+  message(paste0("Examining image: ", imageset["file"]))
+  gfp_path=paste0(datasetpath, "/", imageset["file"], "/", imageset["gfp"])
+  cmac_path=paste0(datasetpath, "/", imageset["file"], "/", imageset["cmac"])
+  
+  
+  
+  
+  gfp = readImage(file.path(gfp_path))
+  cmac = readImage(file.path(cmac_path))
+  
+  list(cmac = cmac, gfp = gfp)
+  
+}
+
 
 write_to_csv <-function(FCM, filename)
 {

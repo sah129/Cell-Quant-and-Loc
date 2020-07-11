@@ -22,6 +22,33 @@ detect_membranes <-function(img)
   
   list(removed = res$removed, membranes = res$membranes, FM = res$FM)
   
+  
+}
+
+
+detect_membranes_git1 <-function(img)
+{
+  message("########################CELLS########################")
+
+  cells_blurred = gblur(img[,,gfp_channel], sigma = .3)
+  ct = thresh(cells_blurred, offset = 0.005)
+  
+  cm = bwlabel(ct)
+  FS = computeFeatures.shape(cm)
+  sel <- which(FS[,"s.area"] < 100)
+  membranes <-rmObjects(cm, sel)
+  
+  
+  res <- remove_edge_membranes(membranes, img)
+  
+  
+  
+  
+  
+  message(paste0("Number of cells detected on first pass: ", length(table(membranes))))
+  
+  list(removed = res$removed, membranes = res$membranes, FM = res$FM)
+  
 }
 
 

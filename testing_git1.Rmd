@@ -1,0 +1,5 @@
+
+```{r setup, include=FALSE}
+source('src/functions.R')
+source('src/Main.R')
+```

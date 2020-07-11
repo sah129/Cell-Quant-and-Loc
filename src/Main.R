@@ -23,34 +23,34 @@ pipeline <- function(datasetpath, testing, gui, progress)
     res <- exclude_and_bind(membranes, vacuoles)
     final<-tidy_up(membranes,vacuoles,res)
     
-    writeImage(fillHull(final$membranes),paste0("Masks/",imageset[row, "file"], "_pm_mask.png"), type = "png", quality = 100)
+    #writeImage(fillHull(final$membranes),paste0("Masks/",imageset[row, "file"], "_pm_mask.png"), type = "png", quality = 100)
     
     
-   # tiff(filename = paste0("Output/",imageset[row, "file"], "_final_results.tiff"))
+    tiff(filename = paste0("Output/",imageset[row, "file"], "_final_results.tiff"))
     
-  #  get_display_img(df = final$df,
-   #                 membranes = final$membranes, 
-    #                col_membranes = 'white', 
-     #               vacuoles = final$vacuoles, 
-      #              col_vacuoles ='yellow', 
-       #             removed = membranes$removed,
-        #            closed_vacuoles = TRUE, 
-         #           img = channels$gfp, 
-          #          showRemoved = TRUE, 
-           #         showMemLabels = TRUE, 
-            #        showVacLabels = FALSE)
-#    dev.off()
+    get_display_img(df = final$df,
+                    membranes = final$membranes, 
+                    col_membranes = 'white', 
+                    vacuoles = final$vacuoles, 
+                    col_vacuoles ='yellow', 
+                    removed = membranes$removed,
+                    closed_vacuoles = TRUE, 
+                    img = channels$gfp, 
+                    showRemoved = TRUE, 
+                    showMemLabels = TRUE, 
+                    showVacLabels = FALSE)
+        dev.off()
     
- #   write.csv(final$df, paste0("Output/",imageset[row, "file"], '_results.csv'), row.names=FALSE)
-  #  results[[row]] <- list(df = final$df,
-   #                        img_gray = img_gray,
-    #                       channels = channels, 
-     #                      filename = imageset[row, "file"],
-      #                    membranes = final$membranes,
-       #                   vacuoles = final$vacuoles,
-        #                   mem_pts = ocontour(final$membranes),
-         #                  vac_pts = ocontour(final$vacuoles),
-          #                 removed_pts = ocontour(membranes$removed))
+    write.csv(final$df, paste0("Output/",imageset[row, "file"], '_results.csv'), row.names=FALSE)
+    results[[row]] <- list(df = final$df,
+                           img_gray = img_gray,
+                           channels = channels, 
+                           filename = imageset[row, "file"],
+                          membranes = final$membranes,
+                          vacuoles = final$vacuoles,
+                           mem_pts = ocontour(final$membranes),
+                           vac_pts = ocontour(final$vacuoles),
+                           removed_pts = ocontour(membranes$removed))
     
     
   
@@ -61,7 +61,71 @@ pipeline <- function(datasetpath, testing, gui, progress)
     return(results)
   }
 
-#res <- pipeline("Datasets/Diploid/Diploid_Dataset_all/FirstThree", testing=FALSE, gui=FALSE, progress=NULL)
+
+
+
+pipeline_git1 <- function(datasetpath, testing, gui, progress)
+{
+  if(testing)
+  {
+    return(readRDS("Demo/Saved Results/presentation_results.rds"))
+  }
+  
+  imageset <- read_in_imageset_git1(datasetpath)
+  results = list()
+  for( row in 1:nrow(imageset))
+  {
+    if(gui)
+      progress$inc(1/nrow(imageset), detail = paste0(imageset[row,"file"], "(", row, "/",nrow(imageset),")" ))
+    
+    channels <- read_in_channels_git1(imageset[row,], datasetpath)
+    img_gray <- convert_to_grayscale_git1(channels)
+    membranes <- detect_membranes_git1(img_gray)
+    vacuoles <- find_vacuoles(membranes, img_gray)
+    res <- exclude_and_bind(membranes, vacuoles)
+    final<-tidy_up(membranes,vacuoles,res)
+    
+    #writeImage(fillHull(final$membranes),paste0("Masks/",imageset[row, "file"], "_pm_mask.png"), type = "png", quality = 100)
+    
+    
+    tiff(filename = paste0("Git1Output/",imageset[row, "file"], "_final_results.tiff"))
+    
+    get_display_img(df = final$df,
+                    membranes = final$membranes, 
+                    col_membranes = 'white', 
+                    vacuoles = final$vacuoles, 
+                    col_vacuoles ='yellow', 
+                    removed = membranes$removed,
+                    closed_vacuoles = TRUE, 
+                    img = channels$gfp, 
+                    showRemoved = TRUE, 
+                    showMemLabels = TRUE, 
+                    showVacLabels = FALSE)
+    dev.off()
+    
+    write.csv(final$df, paste0("Git1Output/",imageset[row, "file"], '_results.csv'), row.names=FALSE)
+    results[[row]] <- list(df = final$df,
+                           img_gray = img_gray,
+                           channels = channels, 
+                           filename = imageset[row, "file"],
+                           membranes = final$membranes,
+                           vacuoles = final$vacuoles,
+                           mem_pts = ocontour(final$membranes),
+                           vac_pts = ocontour(final$vacuoles),
+                           removed_pts = ocontour(membranes$removed))
+    
+    
+    
+    
+  }
+  message("End of main")
+  # if(gui)
+  return(results)
+}
+
+
+
+#res <- pipeline_git1("Datasets/Git1_pngs", testing=FALSE, gui=FALSE, progress=NULL)
 
 #saveRDS(res, "Saved Results/presentation_results.rds")
 
