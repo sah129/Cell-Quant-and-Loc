@@ -1,13 +1,23 @@
 
 ```{r}
 source('src/functions.R')
-datasetpath <- 'Datasets/converted'
+datasetpath <- 'Datasets/Analyzed'
 ```
 
 
 ```{r}
 imageset <- read_in_imageset_git1_tiffs(datasetpath)
 channels <- read_in_channels_git1(imageset[1,], datasetpath)
+```
+
+
+```{r}
+n <- normalize(channels$cmac, ft=c(564,26668))
+```
+
+
+```{r}
+display(n)
 ```
 
 ```{r}

@@ -6,7 +6,7 @@ source('src/Main.R')
 
 
 ```{r}
-res <- pipeline_git1("Datasets/Unanalyzed", testing=FALSE, gui=FALSE, progress=NULL)
+res <- pipeline_git1("Datasets/Analyzed", testing=FALSE, gui=FALSE, progress=NULL)
 ```
 
 
