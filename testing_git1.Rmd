@@ -38,6 +38,10 @@ fill_df <- function(res, df, category)
 
 
 ```{r}
+df_pm_mpi
+```
+
+```{r}
 df_pm_mpi <- fill_df(res,df_pm_mpi, "cell_mpi")
 df_vac_mpi <- fill_df(res,df_vac_mpi, "vac_mpi")
 df_pm_vac_ratio <- fill_df(res,df_pm_vac_ratio, "PM_vac_ratio")
@@ -52,11 +56,61 @@ write.csv(t(df_pm_vac_ratio), paste0("Results-Unanalyzed/pm_vac_ratio_final.csv"
 ```
 
 
+```{r}
+df_pm_mpi_grouped <- group_types(df_pm_mpi)
+df_vac_mpi_grouped <- group_types(df_vac_mpi)
+df_pm_vac_ratio_grouped <- group_types(df_pm_vac_ratio)
+```
+
+```{r}
+
+write.csv(t(df_pm_mpi_grouped), paste0("Results-Unanalyzed/pm_mpi_final_grouped.csv"), na = "", row.names = FALSE)
+write.csv(t(df_vac_mpi_grouped), paste0("Results-Unanalyzed/vac_mpi_final_grouped.csv"), na = "", row.names = FALSE)
+write.csv(t(df_pm_vac_ratio_grouped), paste0("Results-Unanalyzed/pm_vac_ratio_final_grouped.csv"), na = "", row.names = FALSE)
+
+
+```
+
 
 
 ```{r}
-t(df_pm_mpi)
+groups = list("9ArrD 316", "9ArrD Aiy1", "9ArrD Aly2", "9ArrD Csr2", "9ArrD Ecm21", "9ArrD Ldb19", "9ArrD Rod1", "9ArrD Rog3", "9ArrD Ylr392c", "9ArrDYgr068c", "WT 316")
 ```
+
+
+
+```{r}
+group_types <- function(df)
+{
+  df_new = data.frame(Image = "samp")
+  for(group in groups)
+  {
+    df_row = data.frame(Image = "placeholder")
+    
+    rows = which(substr(df[["Image"]],0, nchar(group))==group)
+  
+    for(row in rows)
+    {
+      df_row <- cbind(df_row,df[row,])
+    }
+    
+    df_row <- df_row[, !(colnames(df_row) %in% c("Image"))]
+    
+    df_row["Image"] = group
+    
+  
+    df_new <- merge(df_new, df_row, all.x = TRUE, all.y = TRUE)
+  }
+  df_new <- df_new[-1,]
+  return(df_new)
+}
+```
+
+
+
+
+
+
 
 
 ##############################################################3
