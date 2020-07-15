@@ -52,6 +52,9 @@ add_result_ui <-function()
             # tabPanel("Summary", fluidRow(br(),
              #                             column(3, uiOutput("sum_text")), 
               #                            column(7, plotOutput("sum_hist")))),
+            tabPanel("Edit Module", fluidRow(br(),
+                                             column(4, plotOutput('img_result_em')),
+                                             column(3, uiOutput('edit_module')))),
              tabPanel("FIJI Comparison", fluidRow(br(),
                                           column(4, displayOutput('labeled_img_ex')),
                                           column(3, displayOutput('fiji_results')))),
@@ -63,6 +66,26 @@ add_result_ui <-function()
     ))
   })
 }
+
+get_edit_module <- function(res)
+{
+  renderUI(
+    { 
+      
+   
+      fluidRow(
+      column(5,checkboxGroupInput("cell_selections",
+                         label = "", inline=TRUE,
+                         choices = res$df[["CellID"]])),
+      column(2, actionButton("remove_cells", "Remove")))
+      
+
+      
+      
+      
+    })
+}
+
 get_fiji_result <- function(res)
 {
   renderDisplay({
@@ -70,6 +93,24 @@ get_fiji_result <- function(res)
     img_fiji <- readImage(file.path(filename))
     display(img_fiji, method = 'browser')
   })
+}
+
+get_edit_plot <- function(res)
+{
+  renderPlot(
+    {
+      plot( res$channels$gfp)
+      sapply(res$mem_pts, function(x){points(x, type = 'l', col="white")})
+      sapply(res$vac_pts, function(x){points(x, type = 'l', col=c("yellow","yellow"))})
+      text(x = res$df[,'pm_center_x'],
+           y = res$df[, 'pm_center_y'],
+           labels = res$df[,'CellID'], 
+           col = "red", 
+           pos = c(2,3), #(2,3) = to the left of and above
+           vfont = c("sans serif", "bold"))
+      
+    })
+  
 }
 get_image_plot <-function(res, sel, chan)
 {

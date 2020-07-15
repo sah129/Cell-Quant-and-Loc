@@ -33,7 +33,7 @@ convert_to_grayscale_git1<- function(img)
   #cmac_gray = channel(img$cmac, 'gray')
   
   # RBioformats has .nd2 capability, add in later
-  imgn = combine(cmac_gray, gfp_gray)
+  imgn = EBImage::combine(cmac_gray, gfp_gray)
   return(imgn)
 }
 

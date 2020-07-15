@@ -6,8 +6,83 @@ source('src/Main.R')
 
 
 ```{r}
-res <- pipeline_git1("Datasets/Figure 1B/Analyzed", testing=FALSE, gui=FALSE, progress=NULL)
+res <- pipeline_git1_interactive("Datasets/Dummy 1B", testing=FALSE, gui=FALSE, progress=NULL)
 ```
+```{r}
+rb <- res_before[[1]]
+ra <- res_after[[1]]
+```
+
+```{r}
+table(rb$vacuoles)
+```
+
+```{r}
+table(ra$vacuoles)
+```
+
+
+
+
+```{r}
+rb$df
+```
+
+```{r}
+vacs_tr <- r$df[ (r$df$CellID %in% tr), "vacuoles" ]
+vacs_tr
+```
+
+
+```{r}
+tr <- c("1", "8")
+```
+
+```{r}
+table(r$vacuoles)
+```
+```{r}
+v <- rmObjects(r$vacuoles, vacs_tr, reenumerate = FALSE)
+table(v)
+```
+```{r}
+display(r$vacuoles == 17)
+```
+
+
+```{r}
+get_display_img(df = r$df,
+                membranes = r$membranes, 
+                col_membranes = 'white', 
+                vacuoles = v, 
+                col_vacuoles ='yellow', 
+                removed = r$removed,
+                closed_vacuoles = TRUE, 
+                img = r$channels$gfp, 
+                showRemoved = FALSE, 
+                showMemLabels = TRUE, 
+                showVacLabels = TRUE)
+```
+
+
+```{r}
+display(r$membranes == 57)
+
+```
+
+
+
+
+
+
+
+
+```{r}
+c <-channels$cmac
+c<-channel(c, "asgreen")
+display(c)
+```
+
 
 ```{r}
 fill_df <- function(res, df, category)

@@ -7,6 +7,7 @@ library(shinyFiles)
 library(EBImage)
 library(ggplot2)
 library(DT)
+
 source("src/Main.R")
 source("src/shiny_functions.R")
 
@@ -33,11 +34,12 @@ ui <- fluidPage(
 server <- function(input, output,session) 
   
 {
-  v <- reactiveValues(res = NULL, log = "")
+  curr_img = -1
+  v <- reactiveValues(res = NULL, log = "", i = -1)
 
 
-  volumes <- c(def_root = "C:/Users/sarah/Desktop/ODonnell/ODonnell Cell Quant/Datasets/Diploid", 
-               def_dataset = "C:/Users/sarah/Desktop/ODonnell/ODonnell Cell Quant/Datasets/Diploid/Demo_Diploid_single")
+  volumes <- c(def_root = "C:/Users/Sarah's Computer/Documents/GitHub/Cell-Quant-and-Loc/Datasets/", 
+               def_dataset = "C:/Users/Sarah's Computer/Documents/GitHub/Cell-Quant-and-Loc/Datasets/Dummy 1B")
 
     shinyDirChoose(input, 'datasetpath',
                    roots = volumes,
@@ -46,7 +48,18 @@ server <- function(input, output,session)
     #return(parseDirPath(getVolumes(),input$datasetpath))
   
   dpath <- reactive(return( parseDirPath(volumes["def_root"], input$datasetpath)))  
-
+  
+  observeEvent(input$remove_cells,
+               {
+                 print("remove cells!")
+                 print(v$i)
+                 print(input$cell_selections)
+                 
+                 v$res <- remove_cells(v$res, v$i, input$cell_selections)
+                 output$edit_module <- get_edit_module(v$res[[v$i]])
+                 output$img_result_em <- get_edit_plot(v$res[[v$i]])
+               })
+  
   observeEvent(input$process_dataset, 
    {
      print(input$datasetpath)
@@ -56,7 +69,7 @@ server <- function(input, output,session)
       {
           shinyjs::html("stream_main", "")
           progress$set(message = "Running pipeline...", value = 0)
-          v$res <- pipeline(dpath(),testing=TRUE, gui=TRUE, progress=progress) #dpath()!!!
+          v$res <- pipeline_git1_interactive(dpath(),testing=FALSE, gui=TRUE, progress=progress) #dpath()!!!
           output$stream_main <- renderText("")
           output$results <- add_result_ui()
 
@@ -85,13 +98,19 @@ server <- function(input, output,session)
       {
         obsList[[img_name]] <<- observeEvent(input[[img_name]], 
        {
+         
+          v$i <- i
         #  output$img_result <- get_image_display(v$res[[i]], input$toggle_selections)
           output$img_result_plot <- get_image_plot(v$res[[i]], input$toggle_selections, input$channel_sel)
           output$mpi_table <-get_mpi_table(v$res[[i]])
           output$sum_hist <- get_hist(v$res[[i]])
           output$sum_text <- get_sum_text(v$res[[i]])
           output$labeled_img <- get_final_labeled(v$res[[i]])
+          
           output$labeled_img_ex <- get_final_labeled(v$res[[i]])
+          
+          output$img_result_em <- get_edit_plot(v$res[[i]])
+          output$edit_module <- get_edit_module(v$res[[i]])
           observeEvent(input$toggle_selections, {
             output$img_result_plot <- get_image_plot(v$res[[i]], input$toggle_selections, input$channel_sel)
             

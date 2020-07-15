@@ -1,7 +1,7 @@
 
 ```{r}
 source('src/functions.R')
-datasetpath <- 'Datasets/Analyzed'
+datasetpath <- 'Datasets/Dummy 1B'
 ```
 
 
@@ -17,7 +17,7 @@ n <- normalize(channels$cmac, ft=c(564,26668))
 
 
 ```{r}
-display(n)
+display(img_gray)
 ```
 
 ```{r}
@@ -26,9 +26,39 @@ img_gray <- convert_to_grayscale_git1(channels)
 membranes <- detect_membranes_git1(img_gray)
 
 vacuoles <- find_vacuoles(membranes, img_gray)
+
+
 res <- exclude_and_bind(membranes, vacuoles)
 final<-tidy_up(membranes,vacuoles,res)
 ```
+
+```{r}
+res$df
+```
+
+
+
+
+
+```{r}
+res$empty_cells
+```
+
+
+
+
+
+
+```{r}
+t <- paintObjects(membranes$membranes, tgt = channels$gfp, col = "white")
+tt <- paintObjects(vacuoles$vacuoles, tgt = t, col = "blue")
+display(tt)
+```
+
+
+```{r}
+```
+
 
 ```{r}
 cells_blurred = gblur(img_gray[,,gfp_channel], sigma = .3)
