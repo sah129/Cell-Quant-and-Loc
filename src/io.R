@@ -102,9 +102,9 @@ read_in_channels <- function(imageset, datasetpath)
   
   
   
-  dic = readImage(file.path(dic_path))
-  gfp = readImage(file.path(gfp_path))
-  cmac = readImage(file.path(cmac_path))
+  dic = readImage(file.path(dic_path), as.is = TRUE)
+  gfp = readImage(file.path(gfp_path),  as.is = TRUE)
+  cmac = readImage(file.path(cmac_path),  as.is = TRUE)
   
   list(cmac = cmac, gfp = gfp, dic = dic)
   
@@ -119,12 +119,13 @@ read_in_channels_git1 <- function(imageset, datasetpath)
   cmac_path=paste0(datasetpath, "/", imageset["file"], "/", imageset["cmac"])
   
   
-  
-  
   gfp = readImage(file.path(paste0(datasetpath, "/", imageset["filepath"])))[,,2]
   cmac = readImage(file.path(paste0(datasetpath, "/", imageset["filepath"])))[,,1]
   
-  list(cmac = cmac, gfp = gfp)
+  ref_gfp = readImage(file.path(paste0(datasetpath, "/", imageset["filepath"])),  as.is = TRUE)[,,2]
+  ref_cmac = readImage(file.path(paste0(datasetpath, "/", imageset["filepath"])),  as.is = TRUE)[,,1]
+  
+  list(cmac = cmac, gfp = gfp, ref_cmac = ref_cmac, ref_gfp = ref_gfp)
   
 }
 

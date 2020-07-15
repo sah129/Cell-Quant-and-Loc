@@ -16,8 +16,8 @@ fill_df <- function(res, df, category)
 group_types <- function(df)
 {
   
- # groups = list("9ArrD 316", "9ArrD Aiy1", "9ArrD Aly2", "9ArrD Csr2", "9ArrD Ecm21", "9ArrD Ldb19", "9ArrD Rod1", "9ArrD Rog3", "9ArrD Ylr392c", "9ArrDYgr068c", "WT 316")
-  groups = list("9ArrD 316") #lol
+  groups = list("9ArrD 316", "9ArrD Aiy1", "9ArrD Aly2", "9ArrD Csr2", "9ArrD Ecm21", "9ArrD Ldb19", "9ArrD Rod1", "9ArrD Rog3", "9ArrD Ylr392c", "9ArrDYgr068c", "WT 316")
+  #groups = list("9ArrD 316") #lol
   df_new = data.frame(Image="df new placeholder") #create_dummy_row("df new placeholder", get_max_cells(res))
   for(group in groups)
   {
@@ -74,7 +74,7 @@ sort_data <- function(res)
   write.csv(t(df_pm_vac_ratio_grouped), paste0("FinalOutput/pm_vac_ratio_final_grouped.csv"), na = "", row.names = FALSE)
   
   print("DONE!!!!!")
-  exit()
+
 
 
 }

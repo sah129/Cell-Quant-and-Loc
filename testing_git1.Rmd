@@ -2,6 +2,14 @@
 ```{r setup, include=FALSE}
 source('src/functions.R')
 source('src/Main.R')
+library("tiff")
+```
+
+```{r}
+r <- readTIFF("C:/Users/Sarah's Computer/Documents/GitHub/Cell-Quant-and-Loc/Datasets/Dummy 1B/9ArrD 316 Git1GFPA_003.tif", all = TRUE, info = TRUE, as.is = TRUE)
+```
+```{r}
+ri <- readImage("C:/Users/Sarah's Computer/Documents/GitHub/Cell-Quant-and-Loc/Datasets/Dummy 1B/9ArrD 316 Git1GFPA_003.tif", as.is=TRUE)
 ```
 
 

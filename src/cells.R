@@ -26,7 +26,7 @@ detect_membranes <-function(img)
 }
 
 
-detect_membranes_git1 <-function(img)
+detect_membranes_git1 <-function(img, channels)
 {
   message("########################CELLS########################")
 
@@ -39,7 +39,7 @@ detect_membranes_git1 <-function(img)
   membranes <-rmObjects(cm, sel)
   
   
-  res <- remove_edge_membranes(membranes, img)
+  res <- remove_edge_membranes(membranes, img, channels)
   
   
   
@@ -53,7 +53,7 @@ detect_membranes_git1 <-function(img)
 
 
 
-remove_edge_membranes <-function(membranes,img)
+remove_edge_membranes <-function(membranes,img, channels)
 {
   
   
@@ -78,7 +78,7 @@ remove_edge_membranes <-function(membranes,img)
   
   membranes <- rmObjects(membranes, edge_cells)
   membranes <- bwlabel(membranes)
-  FM <- computeFeatures(membranes, ref = img[,,gfp_channel], xname = "membrane")
+  FM <- computeFeatures(membranes, ref = channels$ref_gfp, xname = "membrane")
   
   
   list(removed = removed, membranes = membranes, FM = FM)

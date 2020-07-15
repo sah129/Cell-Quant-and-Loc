@@ -1,5 +1,5 @@
 
-find_vacuoles <- function(cell_info, img)
+find_vacuoles <- function(cell_info, img, channels)
 {
   message("######################VACUOLES#######################")
   
@@ -21,7 +21,7 @@ find_vacuoles <- function(cell_info, img)
   #vmask = rmObjects(vmask, dim)
   
   
-  FV <- computeFeatures(vmask, ref= img[,,gfp_channel], xname = "vac")
+  FV <- computeFeatures(vmask, ref= channels$ref_gfp, xname = "vac")
   
   res<-list(vacuoles = vmask, 
             FV = FV)

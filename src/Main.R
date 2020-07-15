@@ -78,15 +78,15 @@ pipeline_git1 <- function(datasetpath, testing, gui, progress)
     
     channels <- read_in_channels_git1(imageset[row,], datasetpath)
     img_gray <- convert_to_grayscale_git1(channels)
-    membranes <- detect_membranes_git1(img_gray)
-    vacuoles <- find_vacuoles(membranes, img_gray)
+    membranes <- detect_membranes_git1(img_gray, channels)
+    vacuoles <- find_vacuoles(membranes, img_gray, channels)
     res <- exclude_and_bind(membranes, vacuoles)
     final<-tidy_up(membranes,vacuoles,res)
     
     #writeImage(fillHull(final$membranes),paste0("Masks/",imageset[row, "file"], "_pm_mask.png"), type = "png", quality = 100)
     
     
-    tiff(filename = paste0("Git1Output/",imageset[row, "filename"], "_final_results.tiff"))
+    tiff(filename = paste0("FinalOutput/",imageset[row, "filename"], "_final_results.tiff"))
     
     get_display_img(df = final$df,
                     membranes = final$membranes, 
@@ -137,9 +137,9 @@ pipeline_git1_interactive <- function(datasetpath, testing, gui, progress)
     
     channels <- read_in_channels_git1(imageset[row,], datasetpath)
     img_gray <- convert_to_grayscale_git1(channels)
-    membranes <- detect_membranes_git1(img_gray)
+    membranes <- detect_membranes_git1(img_gray, channels)
     removed <- membranes$removed
-    vacuoles <- find_vacuoles(membranes, img_gray)
+    vacuoles <- find_vacuoles(membranes, img_gray, channels)
     res <- exclude_and_bind(membranes, vacuoles)
     
     first_pass <- get_first_pass(membranes,vacuoles,res)
