@@ -1,7 +1,7 @@
 #functionsfor pipeline 
 
 library("EBImage")
-library("genefilter")
+#library("genefilter")
 library("stringr")
 library("tidyr")
 source("src/cells.R")
