@@ -60,6 +60,10 @@ server <- function(input, output,session)
                  output$img_result_em <- get_edit_plot(v$res[[v$i]])
                })
   
+  observeEvent(input$finish,{
+    print("All Finished!")
+    finish_up(v$res)
+  })
   observeEvent(input$process_dataset, 
    {
      print(input$datasetpath)

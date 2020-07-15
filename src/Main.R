@@ -138,6 +138,7 @@ pipeline_git1_interactive <- function(datasetpath, testing, gui, progress)
     channels <- read_in_channels_git1(imageset[row,], datasetpath)
     img_gray <- convert_to_grayscale_git1(channels)
     membranes <- detect_membranes_git1(img_gray)
+    removed <- membranes$removed
     vacuoles <- find_vacuoles(membranes, img_gray)
     res <- exclude_and_bind(membranes, vacuoles)
     
@@ -154,7 +155,7 @@ pipeline_git1_interactive <- function(datasetpath, testing, gui, progress)
                     col_membranes = 'white', 
                     vacuoles = first_pass$vacuoles, 
                     col_vacuoles ='yellow', 
-                    removed = membranes$removed,
+                    removed = removed,
                     closed_vacuoles = TRUE, 
                     img = channel(channels$gfp, "asgreen"), 
                     showRemoved = TRUE, 
@@ -171,7 +172,8 @@ pipeline_git1_interactive <- function(datasetpath, testing, gui, progress)
                            vacuoles = first_pass$vacuoles,
                            mem_pts = ocontour(first_pass$membranes),
                            vac_pts = ocontour(first_pass$vacuoles),
-                           removed_pts = ocontour(membranes$removed))
+                           removed = removed,
+                           removed_pts = ocontour(removed))
     
     
     

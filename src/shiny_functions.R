@@ -77,7 +77,7 @@ get_edit_module <- function(res)
       column(5,checkboxGroupInput("cell_selections",
                          label = "", inline=TRUE,
                          choices = res$df[["CellID"]])),
-      column(2, actionButton("remove_cells", "Remove")))
+      column(2, actionButton("remove_cells", "Remove"), actionButton("finish", "Finished Editing (all cells!)")))
       
 
       

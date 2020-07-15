@@ -126,3 +126,38 @@ remove_cells <- function(res, i, to_remove)
 }
 
 
+finish_up <- function(res)
+{
+ 
+  rtest <<- res[[1]]
+  
+  for(r in res)
+  {
+
+    r$df <- renumerate_df(r$df)
+  
+  #final<-tidy_up(membranes,vacuoles,res)
+
+  
+  tiff(filename = paste0("FinalOutput/",r$filename, "_final_results.tiff"))
+  
+  get_display_img(df = r$df,
+                  membranes = r$membranes, 
+                  col_membranes = 'white', 
+                  vacuoles = r$vacuoles, 
+                  col_vacuoles ='yellow', 
+                  removed = r$removed,
+                  closed_vacuoles = TRUE, 
+                  img = channel(r$channels$gfp, "asgreen"), 
+                  showRemoved = TRUE, 
+                  showMemLabels = TRUE, 
+                  showVacLabels = FALSE)
+  dev.off()
+  
+  }
+  
+  sort_data(res)
+}
+
+
+
