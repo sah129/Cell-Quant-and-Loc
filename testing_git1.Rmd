@@ -2,59 +2,22 @@
 ```{r setup, include=FALSE}
 source('src/functions.R')
 source('src/Main.R')
-library("tiff")
-```
-
-```{r}
-r <- readTIFF("C:/Users/Sarah's Computer/Documents/GitHub/Cell-Quant-and-Loc/Datasets/Dummy 1B/9ArrD 316 Git1GFPA_003.tif", all = TRUE, info = TRUE, as.is = TRUE)
-```
-```{r}
-ri <- readImage("C:/Users/Sarah's Computer/Documents/GitHub/Cell-Quant-and-Loc/Datasets/Dummy 1B/9ArrD 316 Git1GFPA_003.tif", as.is=TRUE)
 ```
 
 
 ```{r}
-res <- pipeline_git1_interactive("Datasets/Dummy 1B", testing=FALSE, gui=FALSE, progress=NULL)
-```
-```{r}
-rb <- res_before[[1]]
-ra <- res_after[[1]]
+res <- pipeline_git1("Datasets/Figure 1B/Unanalyzed", testing=FALSE, gui=FALSE, progress=NULL, sigma = .3, offset= 0.002, cutoff = 50)
 ```
 
 ```{r}
-table(rb$vacuoles)
+#groups = list("9ArrD 316", "9ArrD Aiy1", "9ArrD Aly2", "9ArrD Csr2", "9ArrD Ecm21", "9ArrD Ldb19", "9ArrD Rod1", "9ArrD Rog3", "9ArrD Ylr392c", "9ArrDYgr068c", "WT 316")
+#groups = list("Bul2-del") 
+groups = list("9ArrD 316", "9ArrD Aiy1", "9ArrD Aly2", "9ArrD Csr2", "9ArrD Ecm21", "9ArrD Ldb19", "9ArrD Rod1", "9ArrD Rog3", "9ArrD Ylr392c", "9ArrDYgr068c")
+sort_data(res, groups)
 ```
 
 ```{r}
-table(ra$vacuoles)
-```
-
-
-
-
-```{r}
-rb$df
-```
-
-```{r}
-vacs_tr <- r$df[ (r$df$CellID %in% tr), "vacuoles" ]
-vacs_tr
-```
-
-
-```{r}
-tr <- c("1", "8")
-```
-
-```{r}
-table(r$vacuoles)
-```
-```{r}
-v <- rmObjects(r$vacuoles, vacs_tr, reenumerate = FALSE)
-table(v)
-```
-```{r}
-display(r$vacuoles == 17)
+r <- res[[2]]
 ```
 
 
@@ -62,7 +25,7 @@ display(r$vacuoles == 17)
 get_display_img(df = r$df,
                 membranes = r$membranes, 
                 col_membranes = 'white', 
-                vacuoles = v, 
+                vacuoles = r$vacuoles, 
                 col_vacuoles ='yellow', 
                 removed = r$removed,
                 closed_vacuoles = TRUE, 
@@ -71,54 +34,35 @@ get_display_img(df = r$df,
                 showMemLabels = TRUE, 
                 showVacLabels = TRUE)
 ```
-
-
-
-
-
-
-
-
-
-
 ```{r}
-c <-channels$cmac
-c<-channel(c, "asgreen")
-display(c)
+v = r$vacuoles == 7
+m = r$membranes == 6
 ```
 
 
 ```{r}
-fill_df <- function(res, df, category)
-{
-  for(i in 1:length(res))
-  {
-    
-    df_row <- data.frame(t(res[[i]]$df[category]), row.names=NULL)
-    colnames(df_row) <-  t(res[[i]]$df["CellID"])
-    
-    
-    df_row <- cbind(Image = res[[i]]$filename[[1]], df_row)
-    df <- merge(df, df_row, all.x = TRUE, all.y= TRUE)
-  }
-  return(df)
-}
+all(v*m == 0)
+```
+
+```{r}
+
 ```
 
 
 
+```{r}
+t<-paintObjects(m, tgt = channel(r$channels$gfp, "asgreen"), col = c('red','red'))
+tt<-paintObjects(v, tgt = t, col = "blue")
+display(tt)
+```
 
+```{r}
+table(r$vacuoles)
+```
 
-
-
-
-
-
-
-
-
-
-
+```{r}
+r$df
+```
 
 ##############################################################3
 

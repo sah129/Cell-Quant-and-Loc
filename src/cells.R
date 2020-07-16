@@ -1,10 +1,10 @@
 
-detect_membranes <-function(img)
+detect_membranes <-function(img, offset, sigma)
 {
   message("########################CELLS########################")
   
-  cells_blurred = gblur(img[,,gfp_channel], sigma = 2)
-  ct = thresh(cells_blurred, offset = 0.002)
+  cells_blurred = gblur(img[,,gfp_channel], sigma = sigma)
+  ct = thresh(cells_blurred, offset = offset)
   
   cm = bwlabel(ct)
   FS = computeFeatures.shape(cm)
@@ -26,16 +26,16 @@ detect_membranes <-function(img)
 }
 
 
-detect_membranes_git1 <-function(img, channels)
+detect_membranes_git1 <-function(img, channels, offset, sigma, cutoff)
 {
   message("########################CELLS########################")
 
-  cells_blurred = gblur(img[,,gfp_channel], sigma = .3)
-  ct = thresh(cells_blurred, offset = 0.005)
+  cells_blurred = gblur(img[,,gfp_channel], sigma = sigma)
+  ct = thresh(cells_blurred, offset = offset)
   
   cm = bwlabel(ct)
   FS = computeFeatures.shape(cm)
-  sel <- which(FS[,"s.area"] < 100)
+  sel <- which(FS[,"s.perimeter"] < cutoff)
   membranes <-rmObjects(cm, sel)
   
   

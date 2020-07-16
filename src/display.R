@@ -40,6 +40,7 @@ get_final_pm_img <- function(mems, res)
     r <- rmObjects(mems$membranes, res$empty_cells, reenumerate = FALSE)
   if(!is.null(res$fragments))
     r <- rmObjects(r, res$fragments, reenumerate = FALSE)
+  r<-reenumerate(r)
   return(r)
 }
 
@@ -66,7 +67,7 @@ get_final_vac_img <- function(vacs, res)
     removedvacs <- which(!(seq(1:length(table(vacs$vacuoles)[-1])) %in% vac_list))
     
   }
-  res_vacs <- rmObjects(vacs$vacuoles, removedvacs, reenumerate = FALSE)
+  res_vacs <- rmObjects(vacs$vacuoles, removedvacs, reenumerate = TRUE)
   return(res_vacs)
 }
 
@@ -94,19 +95,22 @@ renumerate_df <- function(df)
   
 }
 
-get_first_pass <- function(mems,vacs,res)
+get_first_pass <- function(mems,vacs,res, renum)
 {
-  final_pm_img <- get_final_pm_img(mems, res)
-  final_vac_img <- get_final_vac_img(vacs, res)
+  final_pm_img <- get_final_pm_img(mems, res, renum)
+  final_vac_img <- get_final_vac_img(vacs, res, renum)
  
   
   list(membranes = final_pm_img, vacuoles = final_vac_img, df = drop_na(res$df))
   
 }
 
+
+
+
 ########## make new interactive file
 
-remove_cells <- function(res, i, to_remove)
+remove_cells_interactive <- function(res, i, to_remove)
 {
   res_before <<- res
   

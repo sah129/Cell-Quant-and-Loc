@@ -32,7 +32,82 @@ find_vacuoles <- function(cell_info, img, channels)
 }
 
 
+
+
 exclude_and_bind <- function(mems, vacs)
+{
+  oc <- ocontour(mems$membranes)
+  left <- lapply(oc, function(x){min(x[,1])})
+  right <- lapply(oc, function(x){max(x[,1])})
+  top <- lapply(oc, function(x){min(x[,2])})
+  bottom <- lapply(oc, function(x){max(x[,2])})
+  
+  df <- data.frame(matrix(NA, nrow = length(table(mems$membranes)), ncol = 9))
+  names(df) <- c('CellID', 'vacuoles', 'cell_area', 'vac_area', 'PM_vac_ratio', 'cell_mpi', 'vac_mpi', 'pm_center_x', 'pm_center_y')
+  
+  
+  l = length(table(mems$membranes))
+  l = l-1
+  
+  empty_cells <- vector("list", l)
+  fragments <- vector("list", l)
+  
+  for(i in seq(1:l))
+  {
+    
+    pm_seg = mems$membranes == i
+    filled_seg = fillHull(pm_seg)
+    
+    comp <- pm_seg == filled_seg
+    if(length(which(pm_seg == 1)) > length(which(comp == FALSE)))
+    {
+      fragments[i] = i
+    }
+    else
+    {
+      
+      v_seg <-vacs$vacuoles*filled_seg
+      v_filled = fillHull(v_seg)
+      
+      
+      vcount <- table(v_seg)
+      vcount <- vcount[-1] 
+      if( length(vcount) == 0 )
+      {
+        # message(paste0(i, " ZERO VCOUNT"))
+        empty_cells[i] = i
+      }
+      else if(all(filled_seg*v_filled !=0 ))
+      {
+        fragments[i] = i
+        print("FRAGMENT")
+      }
+      else
+      {
+        cmpi <- mems$FM[i, 'membrane.a.b.mean']
+        vmpi <- calc_vac_mpi(as.numeric(names(vcount)), vacs$FV)
+        #do null checking
+        df[i,] <- list(CellID = i,
+                       vacuoles = toString(names(vcount)),
+                       cell_area =  mems$FM[i, 'membrane.0.s.area'],
+                       vac_area = calc_vac_areas(as.numeric(names(vcount)), vacs$FV),
+                       PM_vac_ratio = cmpi/vmpi,
+                       cell_mpi = cmpi,
+                       vac_mpi = vmpi,
+                       pm_center_x = mems$FM[i,'membrane.0.m.cx'],
+                       pm_center_y = mems$FM[i,'membrane.0.m.cy'])
+        
+        
+      }
+      
+    }
+  }
+  list(df=df, fragments = unlist(fragments), empty_cells = unlist(empty_cells))
+
+}
+
+
+exclude_and_bind_old <- function(mems, vacs)
 {
   oc <- ocontour(mems$membranes)
   left <- lapply(oc, function(x){min(x[,1])})
@@ -63,6 +138,7 @@ exclude_and_bind <- function(mems, vacs)
     {
     
       v_seg <-vacs$vacuoles*filled_seg
+      v_filled = fillHull(v_seg)
     
         
       vcount <- table(v_seg)
@@ -71,6 +147,11 @@ exclude_and_bind <- function(mems, vacs)
       {
         # message(paste0(i, " ZERO VCOUNT"))
         empty_cells[i] = i
+      }
+      else if(all(filled_seg*v_filled !=0 ))
+      {
+        fragments[i] = i
+        print("FRAGMENT")
       }
       else
       {

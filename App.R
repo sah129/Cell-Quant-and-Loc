@@ -16,7 +16,7 @@ source("src/shiny_functions.R")
 ui <- fluidPage(
   shinyjs::useShinyjs(),
   
-  titlePanel( h1( "CellQuantAndLoc: O'Donnell Lab", align = "center") , windowTitle = "Capstone  2020 O'Donnell Lab"),
+  titlePanel( h1( "CellQuant: O'Donnell Lab", align = "center") , windowTitle = "Capstone  2020 O'Donnell Lab"),
   fluidRow(
     column(11,  shinyDirButton('datasetpath', 'Select a directory containing the images for the pipeline', 'Please select a folder', FALSE, style = "width: 95%"), align = "center"),
         
@@ -55,7 +55,7 @@ server <- function(input, output,session)
                  print(v$i)
                  print(input$cell_selections)
                  
-                 v$res <- remove_cells(v$res, v$i, input$cell_selections)
+                 v$res <- remove_cells_interactive(v$res, v$i, input$cell_selections)
                  output$edit_module <- get_edit_module(v$res[[v$i]])
                  output$img_result_em <- get_edit_plot(v$res[[v$i]])
                })

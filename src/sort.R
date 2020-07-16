@@ -13,11 +13,11 @@ fill_df <- function(res, df, category)
   return(df)
 }
 
-group_types <- function(df)
+group_types <- function(df, groups)
 {
   
-  groups = list("9ArrD 316", "9ArrD Aiy1", "9ArrD Aly2", "9ArrD Csr2", "9ArrD Ecm21", "9ArrD Ldb19", "9ArrD Rod1", "9ArrD Rog3", "9ArrD Ylr392c", "9ArrDYgr068c", "WT 316")
-  #groups = list("9ArrD 316") #lol
+
+  
   df_new = data.frame(Image="df new placeholder") #create_dummy_row("df new placeholder", get_max_cells(res))
   for(group in groups)
   {
@@ -46,7 +46,7 @@ group_types <- function(df)
   return(df_new)
 }
 
-sort_data <- function(res)
+sort_data <- function(res, groups)
 {
 
   
@@ -60,18 +60,18 @@ sort_data <- function(res)
   df_pm_vac_ratio <- fill_df(res,df_pm_vac_ratio, "PM_vac_ratio")
   
   
-  write.csv(t(df_pm_mpi), paste0("FinalOutput/pm_mpi_final.csv"), na = "", row.names = FALSE)
-  write.csv(t(df_vac_mpi), paste0("FinalOutput/vac_mpi_final.csv"), na = "", row.names = FALSE)
-  write.csv(t(df_pm_vac_ratio), paste0("FinalOutput/pm_vac_ratio_final.csv"), na = "", row.names = FALSE)
+  write.csv(t(df_pm_mpi), paste0("FinalOutput/Spreadsheets/pm_mpi_all.csv"), na = "", row.names = FALSE)
+  write.csv(t(df_vac_mpi), paste0("FinalOutput/Spreadsheets/vac_mpi_all.csv"), na = "", row.names = FALSE)
+  write.csv(t(df_pm_vac_ratio), paste0("FinalOutput/Spreadsheets/pm_vac_ratio_all.csv"), na = "", row.names = FALSE)
   
-  df_pm_mpi_grouped <- group_types(df_pm_mpi)
-  df_vac_mpi_grouped <- group_types(df_vac_mpi)
-  df_pm_vac_ratio_grouped <- group_types(df_pm_vac_ratio)
+  df_pm_mpi_grouped <- group_types(df_pm_mpi, groups)
+  df_vac_mpi_grouped <- group_types(df_vac_mpi, groups)
+  df_pm_vac_ratio_grouped <- group_types(df_pm_vac_ratio, groups)
   
   
-  write.csv(t(df_pm_mpi_grouped), paste0("FinalOutput/pm_mpi_final_grouped.csv"), na = "", row.names = FALSE)
-  write.csv(t(df_vac_mpi_grouped), paste0("FinalOutput/vac_mpi_final_grouped.csv"), na = "", row.names = FALSE)
-  write.csv(t(df_pm_vac_ratio_grouped), paste0("FinalOutput/pm_vac_ratio_final_grouped.csv"), na = "", row.names = FALSE)
+  write.csv(t(df_pm_mpi_grouped), paste0("FinalOutput/Spreadsheets/pm_mpi_grouped.csv"), na = "", row.names = FALSE)
+  write.csv(t(df_vac_mpi_grouped), paste0("FinalOutput/Spreadsheets/vac_mpi_grouped.csv"), na = "", row.names = FALSE)
+  write.csv(t(df_pm_vac_ratio_grouped), paste0("FinalOutput/Spreadsheets/pm_vac_ratio_grouped.csv"), na = "", row.names = FALSE)
   
   print("DONE!!!!!")
 
