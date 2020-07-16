@@ -5,9 +5,9 @@ find_vacuoles <- function(cell_info, img, channels)
   
   b <- max(cell_info$FM[,"membrane.0.s.radius.min"])
   
-  vmask = thresh(img[,,cmac_channel],w=b,h=b,offset = sd(img[,,cmac_channel]))
+  vmask = thresh(img[,,cmac_channel],w=b,h=b,offset = 2*sd(img[,,cmac_channel]))
   vmask = opening(vmask, makeBrush(5,shape="disc"))
-  vmask = fillHull(vmask)
+ # vmask = fillHull(vmask)
   vmask = bwlabel(vmask)
   
   message(paste0("Number of vacuoles detected on first pass: ", format(length(table(vmask)), nsmall = 4)))
@@ -50,6 +50,8 @@ exclude_and_bind <- function(mems, vacs)
   l = length(table(mems$membranes))
   l = l-1
   
+
+  
   empty_cells <- vector("list", l)
   fragments <- vector("list", l)
   
@@ -67,8 +69,8 @@ exclude_and_bind <- function(mems, vacs)
     else
     {
       
-      v_seg <-vacs$vacuoles*filled_seg
-      v_filled = fillHull(v_seg)
+      v_seg <-vacs$vacuoles*(filled_seg-pm_seg)
+     # v_filled = fillHull(v_seg)
       
       
       vcount <- table(v_seg)
@@ -78,18 +80,18 @@ exclude_and_bind <- function(mems, vacs)
         # message(paste0(i, " ZERO VCOUNT"))
         empty_cells[i] = i
       }
-      else if(all(filled_seg*v_filled !=0 ))
-      {
-        fragments[i] = i
-        print("FRAGMENT")
-      }
+     # else if(all(filled_seg*v_filled !=0 ))
+    ##  {
+      #  fragments[i] = i
+    #    print("FRAGMENT")
+    #  }
       else
       {
         c_area <-  mems$FM[i, 'membrane.0.s.area']
         v_area <- calc_vac_areas(as.numeric(names(vcount)), vacs$FV)
         
         #the area of the filled membrane would be a much better metric, however in the interest of space/memory going to just use this
-        if(v_area/c_area < .15)
+        if(v_area/c_area < .25)
         {
           fragments[i] = i # really should make a new array, "vac too small" or simlar
         }

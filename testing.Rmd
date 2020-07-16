@@ -1,7 +1,7 @@
 
 ```{r}
 source('src/functions.R')
-datasetpath <- 'Datasets/Dummy 1B'
+datasetpath <-"Datasets/Dummy 2C/9Arr-del-aly1-del"
 ```
 Figure 1B: sigma = .3, offset= 0.002, cutoff = 50
 
@@ -10,17 +10,10 @@ imageset <- read_in_imageset_git1_tiffs(datasetpath)
 channels <- read_in_channels_git1(imageset[1,], datasetpath)
 img_gray <- convert_to_grayscale_git1(channels)
 ```
-```{r}
-t<-thresh(img_gray[,,gfp_channel])
-bt <- bwlabel(t)
-FB <- computeFeatures.shape(bt)
-hist(FB[,"s.perimeter"])
-```
-
 
 
 ```{r}
-membranes <- detect_membranes(img_gray, channels, offset=-1,sigma=-1,cutoff = -1)
+membranes <- detect_membranes_git1(img_gray, channels)
 ```
 
 ```{r}

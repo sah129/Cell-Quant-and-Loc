@@ -59,10 +59,13 @@ detect_membranes_git1 <-function(img, channels)
 
   ct = thresh(img[,,gfp_channel])
   cm = bwlabel(ct)
+  fm <- computeFeatures.shape(cm)
+  noise <- which(fm[,"s.area"]< 100)#dim(img[,,gfp_channel])[1]/5)
   
-  res <- remove_edge_membranes(cm, img, channels)
+  membranes <- rmObjects(cm, noise)
+  res <- remove_edge_membranes(membranes, img, channels)
   
-  message(paste0("Number of cells detected on first pass: ", length(table(cm))))
+  message(paste0("Number of cells detected on first pass: ", length(table(membranes))))
   
   list(removed = res$removed, membranes = res$membranes, FM = res$FM)
   
