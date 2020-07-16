@@ -2,17 +2,24 @@
 ```{r setup, include=FALSE}
 source('src/functions.R')
 source('src/Main.R')
+datasetpath <-"Datasets/Figure 2C Bul Data/Bul1-del+Bul2-del"
 ```
 
+"Datasets/Figure 2C Bul Data/Bul1-del"
+"Datasets/Figure 2C Bul Data/Bul1-del+Bul2-del"
 
 ```{r}
-res <- pipeline_git1("Datasets/Unanalyzed", testing=FALSE, gui=FALSE, progress=NULL)
+res <- pipeline_git1(datasetpath, testing=FALSE, gui=FALSE, progress=NULL)
 ```
 
 ```{r}
-groups = list("9ArrD 316", "9ArrD Aiy1", "9ArrD Aly2", "9ArrD Csr2", "9ArrD Ecm21", "9ArrD Ldb19", "9ArrD Rod1", "9ArrD Rog3", "9ArrD Ylr392c", "9ArrDYgr068c", "WT 316")
-#groups = list("Bul2-del") 
+#groups = list("9ArrD 316", "9ArrD Aiy1", "9ArrD Aly2", "9ArrD Csr2", "9ArrD Ecm21", "9ArrD Ldb19", "9ArrD Rod1", "9ArrD Rog3", "9ArrD Ylr392c", "9ArrDYgr068c", "WT 316")
+#groups = list("9Arr-del","aly1-del") 
+groups = list("Bul1-del")
+#groups = list("aly1-del_aly2-del", "aly2-del", "BY4741")
 #groups = list("9ArrD 316", "9ArrD Aiy1", "9ArrD Aly2", "9ArrD Csr2", "9ArrD Ecm21", "9ArrD Ldb19", "9ArrD Rod1", "9ArrD Rog3", "9ArrD Ylr392c", "9ArrDYgr068c")
+
+
 sort_data(res, groups)
 ```
 
@@ -34,35 +41,10 @@ get_display_img(df = r$df,
                 showMemLabels = TRUE, 
                 showVacLabels = TRUE)
 ```
-```{r}
-v = r$vacuoles == 7
-m = r$membranes == 6
-```
-
-
-```{r}
-all(v*m == 0)
-```
-
-```{r}
-
-```
 
 
 
-```{r}
-t<-paintObjects(m, tgt = channel(r$channels$gfp, "asgreen"), col = c('red','red'))
-tt<-paintObjects(v, tgt = t, col = "blue")
-display(tt)
-```
 
-```{r}
-table(r$vacuoles)
-```
-
-```{r}
-r$df
-```
 
 ##############################################################3
 
@@ -120,7 +102,4 @@ create_dummy_row <- function(row_text, m)
 ```
 
 
-```{r}
-create_dummy_row("hey",5)
-```
 

@@ -86,6 +86,26 @@ pipeline_git1 <- function(datasetpath, testing, gui, progress)
     
     final<-tidy_up(membranes,vacuoles,res)
     
+    if(nrow(final$df)==0)
+    {
+      mem_pts = NULL #list()
+      vac_pts = NULL
+    }
+    else
+    {
+      mem_pts = ocontour(final$membranes)
+      vac_pts = ocontour(final$vacuoles)
+     
+    }
+    if(length(membranes$removed) > 0)
+    {
+      removed_pts = ocontour(membranes$removed)
+    }
+    else
+    {
+      removed_pts = NULL
+    }
+  
     #writeImage(fillHull(final$membranes),paste0("Masks/",imageset[row, "file"], "_pm_mask.png"), type = "png", quality = 100)
     
     
@@ -111,9 +131,9 @@ pipeline_git1 <- function(datasetpath, testing, gui, progress)
                            filename = imageset[row, "filename"],
                            membranes = final$membranes,
                            vacuoles = final$vacuoles,
-                           mem_pts = ocontour(final$membranes),
-                           vac_pts = ocontour(final$vacuoles),
-                           removed_pts = ocontour(membranes$removed))
+                           mem_pts = mem_pts,
+                           vac_pts = vac_pts,
+                           removed_pts = removed_pts)
     
     
     

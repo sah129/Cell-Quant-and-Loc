@@ -1,34 +1,42 @@
 
 get_display_img <- function(df,membranes, col_membranes, vacuoles, col_vacuoles, removed,closed_vacuoles, img, showRemoved, showMemLabels, showVacLabels)
 {
-  res_imgA <- paintObjects(membranes, tgt = img, col = c(col_membranes, col_membranes))
-  vac_col <- col_vacuoles
-  if(closed_vacuoles)
-    vac_col <- c(col_vacuoles,col_vacuoles)
-  res_img <- paintObjects(vacuoles, tgt = res_imgA, col = vac_col)
-  if(showRemoved)
+  if(nrow(df)==0)
   {
-    res_img <- paintObjects(removed, tgt = res_img, col = c('red','red'))
+    plot(img)
   }
-  
-  plot(res_img)
-  if(showMemLabels)
+  else
   {
-    text(x = df[,'pm_center_x'],
-         y = df[, 'pm_center_y'],
-         labels = df[,'CellID'], 
-         col = "red", 
-         pos = c(2,3), #(2,3) = to the left of and above
-         vfont = c("sans serif", "bold"))
-  }
-  if(showVacLabels)
-  {
-    text(x = df[,'pm_center_x'],
-         y = df[, 'pm_center_y'],
-         labels = df[,'vacuoles'], 
-         col = "orange", 
-         pos = c(3,4), # (3,4) = to the right of and above
-         vfont = c("sans serif", "bold"))
+    res_imgA <- paintObjects(membranes, tgt = img, col = c(col_membranes, col_membranes))
+    vac_col <- col_vacuoles
+    if(closed_vacuoles)
+      vac_col <- c(col_vacuoles,col_vacuoles)
+    res_img <- paintObjects(vacuoles, tgt = res_imgA, col = vac_col)
+    
+    if(showRemoved)
+    {
+      res_img <- paintObjects(removed, tgt = res_img, col = c('red','red'))
+    }
+    
+    plot(res_img)
+    if(showMemLabels)
+    {
+      text(x = df[,'pm_center_x'],
+           y = df[, 'pm_center_y'],
+           labels = df[,'CellID'], 
+           col = "red", 
+           pos = c(2,3), #(2,3) = to the left of and above
+           vfont = c("sans serif", "bold"))
+    }
+    if(showVacLabels)
+    {
+      text(x = df[,'pm_center_x'],
+           y = df[, 'pm_center_y'],
+           labels = df[,'vacuoles'], 
+           col = "orange", 
+           pos = c(3,4), # (3,4) = to the right of and above
+           vfont = c("sans serif", "bold"))
+    }
   }
 }
 
@@ -47,12 +55,19 @@ get_final_pm_img <- function(mems, res)
 
 get_final_vac_img <- function(vacs, res)
 {
+
+
   vac_df <- drop_na(res$df["vacuoles"])
+  if(nrow(vac_df) == 0)
+  {
+    return(NULL)
+  }
   l <- length(table(vacs$vacuoles)[-1])
   vac_list <- vector('list', l)
   i=1
   for(v in vac_df)
   {
+    
     cv <- strsplit(v, ',')
     for(vv in cv)
     {
@@ -66,9 +81,11 @@ get_final_vac_img <- function(vacs, res)
     vac_list <- unlist(vac_list)
     removedvacs <- which(!(seq(1:length(table(vacs$vacuoles)[-1])) %in% vac_list))
     
+    
   }
   res_vacs <- rmObjects(vacs$vacuoles, removedvacs, reenumerate = TRUE)
   return(res_vacs)
+
 }
 
 
@@ -87,10 +104,16 @@ renumerate_df <- function(df)
   {
     df = drop_na(df)
     message('renumerating cell ids')
-    df['CellID'] = seq(1:nrow(df))
+    if(nrow(df) > 0)
+    {
+      df['CellID'] = seq(1:nrow(df))
+    }
   }
   message('reenumerating vacuoles')
-  df['vacuoles'] = seq((nrow(df)+1),2*nrow(df))
+  if(nrow(df) > 0)
+  {
+    df['vacuoles'] = seq((nrow(df)+1),2*nrow(df))
+  }
   return(df)
   
 }
