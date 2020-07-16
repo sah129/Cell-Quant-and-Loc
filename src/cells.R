@@ -26,7 +26,7 @@ detect_membranes <-function(img, offset, sigma)
 }
 
 
-detect_membranes_git1 <-function(img, channels, offset, sigma, cutoff)
+detect_membranes_git1_old <-function(img, channels, offset, sigma, cutoff)
 {
   message("########################CELLS########################")
 
@@ -52,24 +52,15 @@ detect_membranes_git1 <-function(img, channels, offset, sigma, cutoff)
   
 }
 
-detect_membranes_test <-function(img, channels, offset, sigma, cutoff)
+detect_membranes_git1 <-function(img, channels)
 {
   message("########################CELLS########################")
   
-  #cells_blurred = gblur(img[,,gfp_channel], sigma = sigma)
-  ct = thresh(img[,,gfp_channel])
 
+  ct = thresh(img[,,gfp_channel])
   cm = bwlabel(ct)
- # FS = computeFeatures.shape(cm)
-  #sel <- which(FS[,"s.perimeter"] < cutoff)
-  #membranes <-rmObjects(cm, sel)
-  
   
   res <- remove_edge_membranes(cm, img, channels)
-  
-  
-  
-  
   
   message(paste0("Number of cells detected on first pass: ", length(table(cm))))
   

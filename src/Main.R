@@ -62,7 +62,7 @@ pipeline <- function(datasetpath, testing, gui, progress)
   }
 
 
-pipeline_git1 <- function(datasetpath, testing, gui, progress, offset, sigma, cutoff)
+pipeline_git1 <- function(datasetpath, testing, gui, progress)
 {
   if(testing)
   {
@@ -78,7 +78,7 @@ pipeline_git1 <- function(datasetpath, testing, gui, progress, offset, sigma, cu
     
     channels <- read_in_channels_git1(imageset[row,], datasetpath)
     img_gray <- convert_to_grayscale_git1(channels)
-    membranes <- detect_membranes_git1(img_gray, channels, offset, sigma, cutoff)
+    membranes <- detect_membranes_git1(img_gray, channels)
     vacuoles <- find_vacuoles(membranes, img_gray, channels)
     res <- exclude_and_bind(membranes, vacuoles)
     

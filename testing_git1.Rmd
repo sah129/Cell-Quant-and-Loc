@@ -6,13 +6,13 @@ source('src/Main.R')
 
 
 ```{r}
-res <- pipeline_git1("Datasets/Figure 1B/Unanalyzed", testing=FALSE, gui=FALSE, progress=NULL, sigma = .3, offset= 0.002, cutoff = 50)
+res <- pipeline_git1("Datasets/Unanalyzed", testing=FALSE, gui=FALSE, progress=NULL)
 ```
 
 ```{r}
-#groups = list("9ArrD 316", "9ArrD Aiy1", "9ArrD Aly2", "9ArrD Csr2", "9ArrD Ecm21", "9ArrD Ldb19", "9ArrD Rod1", "9ArrD Rog3", "9ArrD Ylr392c", "9ArrDYgr068c", "WT 316")
+groups = list("9ArrD 316", "9ArrD Aiy1", "9ArrD Aly2", "9ArrD Csr2", "9ArrD Ecm21", "9ArrD Ldb19", "9ArrD Rod1", "9ArrD Rog3", "9ArrD Ylr392c", "9ArrDYgr068c", "WT 316")
 #groups = list("Bul2-del") 
-groups = list("9ArrD 316", "9ArrD Aiy1", "9ArrD Aly2", "9ArrD Csr2", "9ArrD Ecm21", "9ArrD Ldb19", "9ArrD Rod1", "9ArrD Rog3", "9ArrD Ylr392c", "9ArrDYgr068c")
+#groups = list("9ArrD 316", "9ArrD Aiy1", "9ArrD Aly2", "9ArrD Csr2", "9ArrD Ecm21", "9ArrD Ldb19", "9ArrD Rod1", "9ArrD Rog3", "9ArrD Ylr392c", "9ArrDYgr068c")
 sort_data(res, groups)
 ```
 
