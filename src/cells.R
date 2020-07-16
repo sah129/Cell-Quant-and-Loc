@@ -32,6 +32,7 @@ detect_membranes_git1 <-function(img, channels, offset, sigma, cutoff)
 
   cells_blurred = gblur(img[,,gfp_channel], sigma = sigma)
   ct = thresh(cells_blurred, offset = offset)
+
   
   cm = bwlabel(ct)
   FS = computeFeatures.shape(cm)
@@ -51,6 +52,30 @@ detect_membranes_git1 <-function(img, channels, offset, sigma, cutoff)
   
 }
 
+detect_membranes_test <-function(img, channels, offset, sigma, cutoff)
+{
+  message("########################CELLS########################")
+  
+  #cells_blurred = gblur(img[,,gfp_channel], sigma = sigma)
+  ct = thresh(img[,,gfp_channel])
+
+  cm = bwlabel(ct)
+ # FS = computeFeatures.shape(cm)
+  #sel <- which(FS[,"s.perimeter"] < cutoff)
+  #membranes <-rmObjects(cm, sel)
+  
+  
+  res <- remove_edge_membranes(cm, img, channels)
+  
+  
+  
+  
+  
+  message(paste0("Number of cells detected on first pass: ", length(table(cm))))
+  
+  list(removed = res$removed, membranes = res$membranes, FM = res$FM)
+  
+}
 
 
 remove_edge_membranes <-function(membranes,img, channels)
@@ -78,8 +103,10 @@ remove_edge_membranes <-function(membranes,img, channels)
   
   membranes <- rmObjects(membranes, edge_cells)
   membranes <- bwlabel(membranes)
-  FM <- computeFeatures(membranes, ref = channels$ref_gfp, xname = "membrane")
   
+
+  FM <- computeFeatures(membranes, ref = channels$ref_gfp, xname = "membrane")
+  FM<- FM[,c("membrane.a.b.mean", "membrane.0.m.cx", "membrane.0.m.cy", "membrane.0.s.area","membrane.0.s.radius.min")]
   
   list(removed = removed, membranes = membranes, FM = FM)
   

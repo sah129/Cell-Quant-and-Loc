@@ -22,6 +22,7 @@ find_vacuoles <- function(cell_info, img, channels)
   
   
   FV <- computeFeatures(vmask, ref= channels$ref_gfp, xname = "vac")
+  FV<-FV[,c("vac.a.b.mean", "vac.0.m.cx", "vac.0.m.cy", "vac.0.s.area")]
   
   res<-list(vacuoles = vmask, 
             FV = FV)
@@ -84,18 +85,29 @@ exclude_and_bind <- function(mems, vacs)
       }
       else
       {
-        cmpi <- mems$FM[i, 'membrane.a.b.mean']
-        vmpi <- calc_vac_mpi(as.numeric(names(vcount)), vacs$FV)
-        #do null checking
-        df[i,] <- list(CellID = i,
-                       vacuoles = toString(names(vcount)),
-                       cell_area =  mems$FM[i, 'membrane.0.s.area'],
-                       vac_area = calc_vac_areas(as.numeric(names(vcount)), vacs$FV),
-                       PM_vac_ratio = cmpi/vmpi,
-                       cell_mpi = cmpi,
-                       vac_mpi = vmpi,
-                       pm_center_x = mems$FM[i,'membrane.0.m.cx'],
-                       pm_center_y = mems$FM[i,'membrane.0.m.cy'])
+        c_area <-  mems$FM[i, 'membrane.0.s.area']
+        v_area <- calc_vac_areas(as.numeric(names(vcount)), vacs$FV)
+        
+        #the area of the filled membrane would be a much better metric, however in the interest of space/memory going to just use this
+        if(v_area/c_area < .15)
+        {
+          fragments[i] = i # really should make a new array, "vac too small" or simlar
+        }
+        else
+        {
+          cmpi <- mems$FM[i, 'membrane.a.b.mean']
+          vmpi <- calc_vac_mpi(as.numeric(names(vcount)), vacs$FV)
+          #do null checking
+          df[i,] <- list(CellID = i,
+                         vacuoles = toString(names(vcount)),
+                         cell_area =  c_area,
+                         vac_area = v_area,
+                         PM_vac_ratio = cmpi/vmpi,
+                         cell_mpi = cmpi,
+                         vac_mpi = vmpi,
+                         pm_center_x = mems$FM[i,'membrane.0.m.cx'],
+                         pm_center_y = mems$FM[i,'membrane.0.m.cy'])
+        }
         
         
       }

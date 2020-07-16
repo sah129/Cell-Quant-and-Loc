@@ -1,149 +1,54 @@
 
 ```{r}
 source('src/functions.R')
-datasetpath <- 'Datasets/Figure 2C Bul Data/Bul1-del'
+datasetpath <- 'Datasets/Dummy 1B'
 ```
-
+Figure 1B: sigma = .3, offset= 0.002, cutoff = 50
 
 ```{r, echo = FALSE}
 imageset <- read_in_imageset_git1_tiffs(datasetpath)
 channels <- read_in_channels_git1(imageset[1,], datasetpath)
 img_gray <- convert_to_grayscale_git1(channels)
 ```
+```{r}
+t<-thresh(img_gray[,,gfp_channel])
+bt <- bwlabel(t)
+FB <- computeFeatures.shape(bt)
+hist(FB[,"s.perimeter"])
+```
+
+```{r}
+
+ct = thresh(img[,,gfp_channel], offset = offset)
+
+cm = bwlabel(ct)
+FS = computeFeatures.shape(cm)
+sel <- which(FS[,"s.perimeter"] < cutoff)
+membranes <-rmObjects(cm, sel)
+
+
+res <- remove_edge_membranes(membranes, img, channels)
+
+
+
+
+
+message(paste0("Number of cells detected on first pass: ", length(table(membranes))))
+
+list(removed = res$removed, membranes = res$membranes, FM = res$FM)
+```
+
 
 
 ```{r}
-membranes <- detect_membranes_git1(img_gray, channels, sigma = .5, offset= 0.003, cutoff = 200)
+membranes <- detect_membranes_test(img_gray, channels, offset=-1,sigma=-1,cutoff = -1)
+```
+
+```{r}
 vacuoles <- find_vacuoles(membranes, img_gray, channels)
-
-t<-paintObjects(membranes$membranes, tgt = channel(channels$gfp, "asgreen"), col = c("white","white"))
-tt<-paintObjects(vacuoles$vacuoles, tgt = t, col = c("blue", "blue"))
-display(tt)
-```
-
-
-```{r}
 res <- exclude_and_bind(membranes, vacuoles)
-
-```
-
-
-```{r}
-display(res$fragments)
-```
-
-
-```{r}
 final<-tidy_up(membranes,vacuoles,res)
 ```
-
-```{r}
-table(membranes$membranes)
-```
-
-```{r}
-table(vacuoles$vacuoles)
-```
-
-
-```{r}
-mems <- membranes
-vacs <- vacuoles
-
-oc <- ocontour(mems$membranes)
-left <- lapply(oc, function(x){min(x[,1])})
-right <- lapply(oc, function(x){max(x[,1])})
-top <- lapply(oc, function(x){min(x[,2])})
-bottom <- lapply(oc, function(x){max(x[,2])})
-
-df <- data.frame(matrix(NA, nrow = length(table(mems$membranes)), ncol = 9))
-names(df) <- c('CellID', 'vacuoles', 'cell_area', 'vac_area', 'PM_vac_ratio', 'cell_mpi', 'vac_mpi', 'pm_center_x', 'pm_center_y')
-
-
-l = length(table(mems$membranes))
-l = l-1
-
-empty_cells <- vector("list", l)
-fragments <- vector("list", l)
-
-for(i in seq(1:l))
-{
-
-  pm_seg = mems$membranes == i
-  filled_seg = fillHull(pm_seg)
-  
-  comp <- pm_seg == filled_seg
-  if(length(which(pm_seg == 1)) > length(which(comp == FALSE)))
-  {
-    fragments[i] = i
-  }
-  else
-  {
-  
-    v_seg <-vacs$vacuoles*filled_seg
-    v_filled = fillHull(v_seg)
-  
-      
-    vcount <- table(v_seg)
-    vcount <- vcount[-1] 
-    if( length(vcount) == 0 )
-    {
-      # message(paste0(i, " ZERO VCOUNT"))
-      empty_cells[i] = i
-    }
-    else if(all(filled_seg*v_filled !=0 ))
-    {
-      fragments[i] = i
-      print("FRAGMENT")
-    }
-    else
-    {
-      cmpi <- mems$FM[i, 'membrane.a.b.mean']
-      vmpi <- calc_vac_mpi(as.numeric(names(vcount)), vacs$FV)
-      #do null checking
-      df[i,] <- list(CellID = i,
-                     vacuoles = toString(names(vcount)),
-                     cell_area =  mems$FM[i, 'membrane.0.s.area'],
-                     vac_area = calc_vac_areas(as.numeric(names(vcount)), vacs$FV),
-                     PM_vac_ratio = cmpi/vmpi,
-                     cell_mpi = cmpi,
-                     vac_mpi = vmpi,
-                     pm_center_x = mems$FM[i,'membrane.0.m.cx'],
-                     pm_center_y = mems$FM[i,'membrane.0.m.cy'])
-      
-      
-    }
-  
-  }
-  
-}
-
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -169,6 +74,8 @@ get_display_img(df = final$df,
 t <- paintObjects(membranes$membranes, tgt = channel(channels$gfp, "asgreen"), col = c("white", "white"))
 display(t)
 ```
+
+
 
 
 ```{r}
