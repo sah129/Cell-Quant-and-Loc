@@ -69,7 +69,7 @@ pipeline_git1 <- function(datasetpath, testing, gui, progress)
     return(readRDS("Demo/Saved Results/presentation_results.rds"))
   }
   
-  imageset <- read_in_imageset_git1_tiffs(datasetpath)
+  imageset <- read_in_imageset_git1(datasetpath)
   results = list()
   for( row in 1:nrow(imageset))
   {

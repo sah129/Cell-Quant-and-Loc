@@ -420,14 +420,25 @@ roi_labels <- function(vmask)
 }
 
 
-=======
+write_to_csv <-function(FCM, filename)
+{
+  
+  mean_pixel_intensity <- FCM[,"membrane.a.b.mean"]
+  ids <- as.numeric(names(mean_pixel_intensity))
+  
+  
+  
+  mean_pixel_intensity <- as.data.frame( mean_pixel_intensity) 
+  mean_pixel_intensity$cell_id = ids
+  mean_pixel_intensity = rev(mean_pixel_intensity)
+  
+  
+  write.table(mean_pixel_intensity, 
+              file = paste0("Output/",filename, "_quant.csv"),
+              sep=",", row.names = FALSE, quote=FALSE)
+  
+}
 
-library("EBImage")
-library("genefilter")
-
-cmac_channel = 1
-gfp_channel = 2
-dic_channel = 3
 
 read_in_channels <- function(dic,gfp,cmac)
 {

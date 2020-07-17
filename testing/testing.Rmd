@@ -1,24 +1,19 @@
 
 ```{r}
 source('src/functions.R')
-datasetpath <-"Datasets/Figure 2C/9Arr-del-aly1-del"
+datasetpath <- "Datasets/Figure 1C/9ArrD 316-9ArrD Aly1-9ArrD Aly2-9ArrD Csr2-9ArrD Ecm21"
 ```
 Figure 1B: sigma = .3, offset= 0.002, cutoff = 50
 
 ```{r, echo = FALSE}
 imageset <- read_in_imageset_git1_tiffs(datasetpath)
-channels <- read_in_channels_git1(imageset[1,], datasetpath)
+channels <- read_in_channels_git1_tiffs(imageset[1,], datasetpath)
 img_gray <- convert_to_grayscale_git1(channels)
-```
-
-
-```{r}
 membranes <- detect_membranes_git1(img_gray, channels)
-display(membranes$membranes)
+vacuoles <- find_vacuoles(membranes, img_gray, channels)
 ```
 
 ```{r}
-vacuoles <- find_vacuoles(membranes, img_gray, channels)
 res <- exclude_and_bind(membranes, vacuoles)
 final<-tidy_up(membranes,vacuoles,res)
 ```
@@ -26,24 +21,20 @@ final<-tidy_up(membranes,vacuoles,res)
 final$df
 ```
 
-```{r}
-img = img_gray
-b <- max(membranes$FM[,"membrane.0.s.radius.min"])
-vmask = thresh(img[,,cmac_channel],w=b,h=b,offset = sd(img[,,cmac_channel]))
-vmask = closing(vmask, makeBrush(5,shape="disc"))
-#vmask = fillHull(vmask)
-# = bwlabel(vmask)
-display(vmask)
-```
 
 ```{r}
-img = img_gray
-b <- max(membranes$FM[,"membrane.0.s.radius.min"])
-vmask = thresh(img[,,cmac_channel],w=b,h=b,offset = 3*sd(img[,,cmac_channel]))
-#vmask = fillHull(vmask)
-#vmask = bwlabel(vmask)
-display(vmask)
+res$df
 ```
+
+
+
+```{r}
+display(res$membranes)
+```
+
+
+
+
 
 
 ```{r}
@@ -70,10 +61,6 @@ v2<-final$vacuoles==30
 
 
 
-```{r}
-t <- paintObjects(vacuoles$vacuoles, tgt = channel(channels$cmac, "asred"), col = c("white", "blue"))
-display(t)
-```
 
 
 
