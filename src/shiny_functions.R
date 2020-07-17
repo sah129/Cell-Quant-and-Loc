@@ -71,18 +71,11 @@ get_edit_module <- function(res)
 {
   renderUI(
     { 
-      
-   
       fluidRow(
       column(5,checkboxGroupInput("cell_selections",
                          label = "", inline=TRUE,
                          choices = res$df[["CellID"]])),
       column(2, actionButton("remove_cells", "Remove"), actionButton("finish", "Finished Editing (all cells!)")))
-      
-
-      
-      
-      
     })
 }
 
@@ -114,8 +107,6 @@ get_edit_plot <- function(res)
 }
 get_image_plot <-function(res, sel, chan)
 {
- 
-
   renderPlot(
     {
      
@@ -160,14 +151,9 @@ get_image_plot <-function(res, sel, chan)
         
         if("rem_select" %in% sel)
           sapply(res$removed_pts, function(x){points(x, type = 'l', col="red")})
-      
       }
       par(new = TRUE)
-
-
     })
-
-  
 }
 
 get_fiji_comparison <- function(res)
@@ -187,8 +173,6 @@ get_final_labeled <- function(res)
    display(img_final, method = 'browser')
   })
 }
-
-
 
 get_sum_text <- function(res)
 {
@@ -216,36 +200,6 @@ get_hist <- function(res)
          y = "Frequency",
          x = "Mean Pixel Intensity")+
     theme(plot.title = element_text(hjust = 0.5))
-  })
-}
-
-
-#################### old #################3
-get_mpi_table_old <- function(res)
-{
-  renderDT({
-    if(is.null(res)) return()
-    df <- as.data.frame(res$FCM[,"membrane.a.b.mean"])
-    # ids <- as.numeric(names(df))
-    names(df)[1] <- "mpi"
-    
-    
-    datatable(df, 
-              class = 'cell-border stripe',
-              colnames = c( "Cell ID", "MPI"),
-              options = list(
-                searching = FALSE,
-                lengthChange = FALSE,
-                scrollCollapse = FALSE
-                
-              ),
-              
-    ) %>% 
-      formatStyle(columns=colnames(df), 
-                  target = 'row',
-                  backgroundColor = "aquamarine4") %>% 
-      formatRound(columns = colnames(df), 4)
-    
   })
 }
 

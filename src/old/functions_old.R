@@ -440,6 +440,33 @@ write_to_csv <-function(FCM, filename)
 }
 
 
+
+detect_membranes_git1_old <-function(img, channels, offset, sigma, cutoff)
+{
+  message("########################CELLS########################")
+  
+  cells_blurred = gblur(img[,,gfp_channel], sigma = sigma)
+  ct = thresh(cells_blurred, offset = offset)
+  
+  
+  cm = bwlabel(ct)
+  FS = computeFeatures.shape(cm)
+  sel <- which(FS[,"s.perimeter"] < cutoff)
+  membranes <-rmObjects(cm, sel)
+  
+  
+  res <- remove_edge_membranes(membranes, img, channels)
+  
+  
+  
+  
+  
+  message(paste0("Number of cells detected on first pass: ", length(table(membranes))))
+  
+  list(removed = res$removed, membranes = res$membranes, FM = res$FM)
+  
+}
+
 read_in_channels <- function(dic,gfp,cmac)
 {
 

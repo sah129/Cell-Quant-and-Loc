@@ -1,56 +1,41 @@
+
 fill_df <- function(res, df, category)
 {
   for(i in 1:length(res))
   {
-    
     df_row <- data.frame(t(res[[i]]$df[category]), row.names=NULL)
     colnames(df_row) <-  t(res[[i]]$df["CellID"])
-    
     
     df_row <- cbind(Image = res[[i]]$filename[[1]], df_row)
     df <- merge(df, df_row, all.x = TRUE, all.y= TRUE)
   }
   return(df)
 }
-
+# Group individual experiment types, aggregate, and output
 group_types <- function(df, groups)
 {
-  
-
-  
-  df_new = data.frame(Image="df new placeholder") #create_dummy_row("df new placeholder", get_max_cells(res))
+  df_new = data.frame(Image="df new placeholder") 
   for(group in groups)
   {
-    df_row = data.frame(Image = "df row placeholder") #create_dummy_row("df row placeholder", get_max_cells(res))
-    
+    df_row = data.frame(Image = "df row placeholder") 
     rows = which(substr(df[["Image"]],0, nchar(group))==group)
     
     for(row in rows)
-    {
-      # print(df[row,])
       df_row <- cbind(df_row,df[row,])
-    }
-    
     df_row <- df_row[, !(colnames(df_row) %in% c("Image"))]
-    
-    
-    
     df_row <- df_row[ , colSums(is.na(df_row)) == 0]
     colnames(df_row)<- 1:ncol(df_row)
     df_row["Image"] = group
     
     df_new <- merge(df_new, df_row, all.x= TRUE, all.y = TRUE)
-    # print(df_new)
   }
   df_new <- df_new[-1,]
   return(df_new)
 }
 
+# Sort all data from computed images.  Aggregate, output
 sort_data <- function(res, groups)
 {
-
-  
-  
   df_pm_mpi <- data.frame(Image = character())
   df_vac_mpi <- data.frame(Image = character())
   df_pm_vac_ratio <- data.frame(Image = character())
@@ -73,10 +58,7 @@ sort_data <- function(res, groups)
   write.csv(t(df_vac_mpi_grouped), paste0("FinalOutput/Spreadsheets/vac_mpi_grouped2.csv"), na = "", row.names = FALSE)
   write.csv(t(df_pm_vac_ratio_grouped), paste0("FinalOutput/Spreadsheets/pm_vac_ratio_grouped2.csv"), na = "", row.names = FALSE)
   
-  print("DONE!!!!!")
-
-
-
+  print("Finished sorting data.")
 }
 
 
