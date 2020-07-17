@@ -1,46 +1,16 @@
 
-get_display_img <- function(df,membranes, col_membranes, vacuoles, col_vacuoles, removed,closed_vacuoles, img, showRemoved, showMemLabels, showVacLabels)
+# Wrapper function to perform final pass on membranes, vacuoles, and 
+# update the data frame.
+tidy_up <- function(membranes,vacuoles,res)
 {
-  if(nrow(df)==0)
-  {
-    plot(img)
-  }
-  else
-  {
-    res_imgA <- paintObjects(membranes, tgt = img, col = c(col_membranes, col_membranes))
-    vac_col <- col_vacuoles
-    if(closed_vacuoles)
-      vac_col <- c(col_vacuoles,col_vacuoles)
-    res_img <- paintObjects(vacuoles, tgt = res_imgA, col = vac_col)
-    
-    if(showRemoved)
-    {
-      res_img <- paintObjects(removed, tgt = res_img, col = c('red','red'))
-    }
-    
-    plot(res_img)
-    if(showMemLabels)
-    {
-      text(x = df[,'pm_center_x'],
-           y = df[, 'pm_center_y'],
-           labels = df[,'CellID'], 
-           col = "red", 
-           pos = c(2,3), #(2,3) = to the left of and above
-           vfont = c("sans serif", "bold"))
-    }
-    if(showVacLabels)
-    {
-      text(x = df[,'pm_center_x'],
-           y = df[, 'pm_center_y'],
-           labels = df[,'vacuoles'], 
-           col = "orange", 
-           pos = c(3,4), # (3,4) = to the right of and above
-           vfont = c("sans serif", "bold"))
-    }
-  }
+  final_pm_img <- get_final_pm_img(membranes, res)
+  final_vac_img <- get_final_vac_img(vacuoles, res)
+  final_df <- renumerate_df(res$df)
+  
+  list(membranes = final_pm_img, vacuoles = final_vac_img, df = final_df)
 }
 
-
+# Remove fragments and empty cells while taking care to preserve numbering.
 get_final_pm_img <- function(mems, res)
 {
   r = mems$membranes
@@ -52,52 +22,8 @@ get_final_pm_img <- function(mems, res)
   return(r)
 }
 
-
-get_final_vac_img <- function(vacs, res)
-{
-
-
-  vac_df <- drop_na(res$df["vacuoles"])
-  if(nrow(vac_df) == 0)
-  {
-    return(NULL)
-  }
-  l <- length(table(vacs$vacuoles)[-1])
-  vac_list <- vector('list', l)
-  i=1
-  for(v in vac_df)
-  {
-    
-    cv <- strsplit(v, ',')
-    for(vv in cv)
-    {
-      
-      for(vvv in vv) #lol
-      {
-        vac_list[i]=as.numeric(str_trim(vvv))
-        i = i + 1
-      }
-    }
-    vac_list <- unlist(vac_list)
-    removedvacs <- which(!(seq(1:length(table(vacs$vacuoles)[-1])) %in% vac_list))
-    
-    
-  }
-  res_vacs <- rmObjects(vacs$vacuoles, removedvacs, reenumerate = TRUE)
-  return(res_vacs)
-
-}
-
-
-tidy_up <- function(membranes,vacuoles,res)
-{
-  final_pm_img <- get_final_pm_img(membranes, res)
-  final_vac_img <- get_final_vac_img(vacuoles, res)
-  final_df <- renumerate_df(res$df)
-  
-  list(membranes = final_pm_img, vacuoles = final_vac_img, df = final_df)
-}
-
+# Format the dataframe to conform to O'Donnell lab standards.  Combined vacuoles
+# will be assigned label 2x+1, where x=ID of the parent cell.
 renumerate_df <- function(df)
 {
   if(any(is.na(df['CellID'])))
@@ -118,72 +44,87 @@ renumerate_df <- function(df)
   
 }
 
-get_first_pass <- function(mems,vacs,res, renum)
+# Remove vacuoles belonging to excluded cells and reformat the dataframe.
+get_final_vac_img <- function(vacs, res)
 {
-  final_pm_img <- get_final_pm_img(mems, res, renum)
-  final_vac_img <- get_final_vac_img(vacs, res, renum)
- 
-  
-  list(membranes = final_pm_img, vacuoles = final_vac_img, df = drop_na(res$df))
-  
-}
-
-
-
-
-########## make new interactive file
-
-remove_cells_interactive <- function(res, i, to_remove)
-{
-  res_before <<- res
-  
-  vacs_tr <- res[[i]]$df[ (res[[i]]$df$CellID %in% to_remove), "vacuoles" ]
-  
-  res[[i]]$vacuoles <- rmObjects(res[[i]]$vacuoles, vacs_tr, reenumerate = FALSE)
-  res[[i]]$membranes <- rmObjects(res[[i]]$membranes, to_remove, reenumerate = FALSE)
-  
-  
-  res[[i]]$df <- res[[i]]$df[ !(res[[i]]$df$CellID %in% to_remove), ]
-  
-  res[[i]]$mem_pts <- ocontour(res[[i]]$membranes)
-  res[[i]]$vac_pts <- ocontour(res[[i]]$vacuoles)
-  
-  res_after <<- res
-  return(res)
-}
-
-
-finish_up <- function(res)
-{
- 
-  rtest <<- res[[1]]
-  
-  for(r in res)
+  vac_df <- drop_na(res$df["vacuoles"])
+  if(nrow(vac_df) == 0)
   {
-
-    r$df <- renumerate_df(r$df)
-  
-  #final<-tidy_up(membranes,vacuoles,res)
-
-  
-  tiff(filename = paste0("FinalOutput/",r$filename, "_final_results.tiff"))
-  
-  get_display_img(df = r$df,
-                  membranes = r$membranes, 
-                  col_membranes = 'white', 
-                  vacuoles = r$vacuoles, 
-                  col_vacuoles ='yellow', 
-                  removed = r$removed,
-                  closed_vacuoles = TRUE, 
-                  img = channel(r$channels$gfp, "asgreen"), 
-                  showRemoved = TRUE, 
-                  showMemLabels = TRUE, 
-                  showVacLabels = FALSE)
-  dev.off()
-  
+    return(NULL)
   }
-  
-  sort_data(res)
+  l <- length(table(vacs$vacuoles)[-1])
+  vac_list <- vector('list', l)
+  i=1
+  for(v in vac_df)
+  {
+    cv <- strsplit(v, ',')
+    for(vv in cv)
+    {
+      for(vvv in vv) 
+      {
+        vac_list[i]=as.numeric(str_trim(vvv))
+        i = i + 1
+      }
+    }
+    vac_list <- unlist(vac_list)
+    removedvacs <- which(!(seq(1:length(table(vacs$vacuoles)[-1])) %in% vac_list))
+  }
+  res_vacs <- rmObjects(vacs$vacuoles, removedvacs, reenumerate = TRUE)
+  return(res_vacs)
+
+}
+
+
+
+
+# Wrapper function to generate display image.
+# df: dataframe to sue
+# membranes: membrane objects
+# col_membranes: color to paint membranes on image
+# vacuoles:  vacuole objects
+# col_vacuoles:  color to paint vacuoles on image
+# removed:  removed membrane objects
+# closed_vacuoles: set to TRUE to paint border+fill of vacuoles
+# img: background image to draw on
+# showRemoved:  show removed membranes
+# showMemLabels:  show membrane labels
+# showVacLabels:  show vacuole labels
+
+get_display_img <- function(df,membranes, col_membranes, vacuoles, col_vacuoles, removed,closed_vacuoles, img, showRemoved, showMemLabels, showVacLabels)
+{
+  if(nrow(df)==0) # nothing detected
+  {
+    plot(img)
+  }
+  else
+  {
+    res_imgA <- paintObjects(membranes, tgt = img, col = c(col_membranes, col_membranes))
+    vac_col <- col_vacuoles
+    if(closed_vacuoles)
+      vac_col <- c(col_vacuoles,col_vacuoles)
+    res_img <- paintObjects(vacuoles, tgt = res_imgA, col = vac_col)
+    if(showRemoved)
+      res_img <- paintObjects(removed, tgt = res_img, col = c('red','red'))
+    plot(res_img)
+    if(showMemLabels)
+    {
+      text(x = df[,'pm_center_x'],
+           y = df[, 'pm_center_y'],
+           labels = df[,'CellID'], 
+           col = "red", 
+           pos = c(2,3), #(2,3) = to the left of and above
+           vfont = c("sans serif", "bold"))
+    }
+    if(showVacLabels)
+    {
+      text(x = df[,'pm_center_x'],
+           y = df[, 'pm_center_y'],
+           labels = df[,'vacuoles'], 
+           col = "orange", 
+           pos = c(3,4), # (3,4) = to the right of and above
+           vfont = c("sans serif", "bold"))
+    }
+  }
 }
 
 
