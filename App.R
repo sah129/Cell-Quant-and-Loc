@@ -12,7 +12,7 @@ source("src/shiny_functions.R")
 ui <- fluidPage(
   shinyjs::useShinyjs(),
   
-  titlePanel( h1( "CellQuant: O'Donnell Lab", align = "center") , windowTitle = "Capstone  2020 O'Donnell Lab"),
+  titlePanel( h1( "CellQuant: O'Donnell Lab", align = "center") , windowTitle = "2020 O'Donnell Lab"),
   fluidRow(
     column(11,  shinyDirButton('datasetpath', 'Select a directory containing the images for the pipeline', 'Please select a folder', FALSE, style = "width: 95%"), align = "center"),
         

@@ -45,18 +45,18 @@ sort_data <- function(res, groups)
   df_pm_vac_ratio <- fill_df(res,df_pm_vac_ratio, "PM_vac_ratio")
   
   
-  write.csv(t(df_pm_mpi), paste0("FinalOutput/Spreadsheets/pm_mpi_all2.csv"), na = "", row.names = FALSE)
-  write.csv(t(df_vac_mpi), paste0("FinalOutput/Spreadsheets/vac_mpi_all2.csv"), na = "", row.names = FALSE)
-  write.csv(t(df_pm_vac_ratio), paste0("FinalOutput/Spreadsheets/pm_vac_ratio_all2.csv"), na = "", row.names = FALSE)
+  write.csv(t(df_pm_mpi), paste0("FinalOutput/Aggregated Spreadsheets/pm_mpi_all.csv"), na = "", row.names = FALSE)
+  write.csv(t(df_vac_mpi), paste0("FinalOutput/Aggregated Spreadsheets/vac_mpi_all.csv"), na = "", row.names = FALSE)
+  write.csv(t(df_pm_vac_ratio), paste0("FinalOutput/Aggregated Spreadsheets/pm_vac_ratio_all.csv"), na = "", row.names = FALSE)
   
   df_pm_mpi_grouped <- group_types(df_pm_mpi, groups)
   df_vac_mpi_grouped <- group_types(df_vac_mpi, groups)
   df_pm_vac_ratio_grouped <- group_types(df_pm_vac_ratio, groups)
   
   
-  write.csv(t(df_pm_mpi_grouped), paste0("FinalOutput/Spreadsheets/pm_mpi_grouped2.csv"), na = "", row.names = FALSE)
-  write.csv(t(df_vac_mpi_grouped), paste0("FinalOutput/Spreadsheets/vac_mpi_grouped2.csv"), na = "", row.names = FALSE)
-  write.csv(t(df_pm_vac_ratio_grouped), paste0("FinalOutput/Spreadsheets/pm_vac_ratio_grouped2.csv"), na = "", row.names = FALSE)
+  write.csv(t(df_pm_mpi_grouped), paste0("FinalOutput/Aggregated Spreadsheets/pm_mpi_grouped.csv"), na = "", row.names = FALSE)
+  write.csv(t(df_vac_mpi_grouped), paste0("FinalOutput/Aggregated Spreadsheets/vac_mpi_grouped.csv"), na = "", row.names = FALSE)
+  write.csv(t(df_pm_vac_ratio_grouped), paste0("FinalOutput/Aggregated Spreadsheets/pm_vac_ratio_grouped.csv"), na = "", row.names = FALSE)
   
   print("Finished sorting data.")
 }

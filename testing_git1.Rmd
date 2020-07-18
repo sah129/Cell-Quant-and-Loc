@@ -2,7 +2,7 @@
 ```{r setup, include=FALSE}
 source('src/functions.R')
 source('src/Main.R')
-datasetpath <- "Datasets/Figure 1C/9ArrD 316-9ArrD Aly1-9ArrD Aly2-9ArrD Csr2-9ArrD Ecm21"
+datasetpath <- "Datasets/Figure 7B"
 ```
 
 "Datasets/Figure 2C Bul Data/Bul1-del"
@@ -10,17 +10,19 @@ datasetpath <- "Datasets/Figure 1C/9ArrD 316-9ArrD Aly1-9ArrD Aly2-9ArrD Csr2-9A
 "Datasets/Figure 1C/9ArrD 316-9ArrD Aly1-9ArrD Aly2-9ArrD Csr2-9ArrD Ecm21"
 
 ```{r}
-res <- pipeline_git1(datasetpath, testing=FALSE, gui=FALSE, progress=NULL)
+res <- pipeline(datasetpath, testing=FALSE, gui=FALSE, progress=NULL, interactive = FALSE)
 ```
 
 ```{r}
 #groups = list("9ArrD 316", "9ArrD Aiy1", "9ArrD Aly2", "9ArrD Csr2", "9ArrD Ecm21", "9ArrD Ldb19", "9ArrD Rod1", "9ArrD Rog3", "9ArrD Ylr392c", "9ArrDYgr068c", "WT 316")
 #groups = list("9Arr-del","aly1-del") 
 #groups = list("Bul1-del")
-groups = list("Bul1-del+Bul2-del","Bul2-del")
+#groups =  list("Aly1delAly2del", "Apl1del", "Apl3del", "BY4741", "End3del", "Vrp1del")
+#groups = list("Bul1-del+Bul2-del","Bul2-del")
 #groups = list("aly1-del_aly2-del", "aly2-del", "BY4741")
 #groups = list("9ArrD 316", "9ArrD Aiy1", "9ArrD Aly2", "9ArrD Csr2", "9ArrD Ecm21", "9ArrD Ldb19", "9ArrD Rod1", "9ArrD Rog3", "9ArrD Ylr392c", "9ArrDYgr068c")
 
+groups = list("BY4741")
 
 sort_data(res, groups)
 ```

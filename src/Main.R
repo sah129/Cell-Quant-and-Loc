@@ -12,7 +12,7 @@ pipeline <- function(datasetpath, testing, gui, progress, interactive)
   if(testing)
     return(readRDS("Demo/Saved Results/presentation_results.rds"))
   
-  imageset <- read_in_imageset(datasetpath)
+  imageset <- read_in_imageset_files(datasetpath)
   results = list()
   for( row in 1:nrow(imageset))
   {
@@ -60,7 +60,7 @@ pipeline <- function(datasetpath, testing, gui, progress, interactive)
                     showVacLabels = FALSE)
     dev.off()
     
-    write.csv(final$df, paste0("FinalOutput/Spreadsheets/",imageset[row, "filename"], '_results.csv'), row.names=FALSE)
+    write.csv(final$df, paste0("FinalOutput/Individual Spreadsheets/",imageset[row, "filename"], '_results.csv'), row.names=FALSE)
     results[[row]] <- list(df = final$df,
                            img_gray = img_gray,
                            channels = channels, 

@@ -27,7 +27,7 @@ find_vacuoles <- function(cell_info, img, channels)
   return(res)
 }
 
-# Built the resultant data frame while examining and excluding candidate 
+# Build the resultant data frame while examining and excluding candidate 
 # membranes and their associated vacuoles. Returns data frame, list of 
 # fragment PM objects, list of PMs where no vacuoles are found.
 exclude_and_bind <- function(mems, vacs)
@@ -55,7 +55,7 @@ exclude_and_bind <- function(mems, vacs)
     
     # If # of pixels in PM is greater than intersection complement, add to 
     # fragment list.  This technique allows whole PMS with some 
-    # non-disconnected gaps in fluorescence to make the cut. 
+    # minor gaps in fluorescence to make the cut. 
     if(length(which(pm_seg == 1)) > length(which(comp == FALSE)))
       fragments[i] = i
     else  
@@ -75,7 +75,7 @@ exclude_and_bind <- function(mems, vacs)
         # Exclude cells containing very small combined vacuole area.
         # The area of the filled membrane would be a much better metric, 
         # however in the interest of space/memory we will use precomputed 
-        # areas in leiu of another fillHull operation.
+        # areas in lieu of another fillHull operation.
         if(v_area/c_area < .25)
           empty_cells[i] = i
         else  # populate dataframe

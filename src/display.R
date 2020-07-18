@@ -78,7 +78,7 @@ get_final_vac_img <- function(vacs, res)
 
 
 # Wrapper function to generate display image.
-# df: dataframe to sue
+# df: dataframe to use
 # membranes: membrane objects
 # col_membranes: color to paint membranes on image
 # vacuoles:  vacuole objects
