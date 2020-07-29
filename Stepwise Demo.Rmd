@@ -1,0 +1,90 @@
+---
+title: "Stepwise Demo"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+source('src/functions.R')
+datasetpath <- "Datasets/Figure 2C/aly1-del-aly2-del-aly2-del"
+```
+
+
+aly2-del_415Git1_003_final_results.tiff"
+
+```{r}
+imageset <- read_in_imageset_files(datasetpath)
+row = 8
+```
+
+```{r}
+channels <- read_in_channels(imageset[row,], datasetpath)
+img <- abind(channel(channels$cmac, "asred"), channel(channels$gfp, "asgreen"), along = 1)
+#display(img)
+```
+
+```{r}
+img_gray <- convert_to_grayscale(channels)
+img <- abind(img_gray[,,cmac_channel], img_gray[,,gfp_channel], along = 1)
+#display(img)
+```
+
+
+```{r}
+message("########################CELLS########################")
+ct = thresh(img_gray[,,gfp_channel])
+cm = bwlabel(ct)
+
+detect_membranes1 <- cm
+
+fm <- computeFeatures.shape(cm)
+sel <- which(fm[,"s.area"]< 100) # noise removal
+
+
+membranes <- rmObjects(cm, sel, reenumerate = FALSE)
+noise <- rmObjects(cm, membranes)
+
+
+
+detect_membranes2 <- rmObjects(cm, sel)
+res <- remove_edge_membranes(detect_membranes2, img_gray, channels)
+
+detect_membranes3 <- res
+```
+
+```{r}
+#t<- paintObjects(detect_membranes1, tgt = channel(channels$gfp, "asgreen"), col = c('white','white'))
+with_noise<-paintObjects(noise, tgt = toRGB(detect_membranes1), col = c('red','red'))
+with_removed <- paintObjects(detect_membranes3$removed, toRGB(detect_membranes3$membranes), col = c('red','red'))
+```
+
+```{r}
+a<-abind(toRGB(detect_membranes1), with_noise, toRGB(detect_membranes2), with_removed,toRGB(detect_membranes3$membranes), along = 1)
+#detect_membranes_steps <- tile(combine(detect_membranes1, detect_membranes2,detect_membranes3), nx = 3)
+#display(detect_membranes_steps)
+display(a)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    vacuoles <- find_vacuoles(membranes, img_gray, channels)
+    res <- exclude_and_bind(membranes, vacuoles)
+      final<-tidy_up(membranes,vacuoles,res)

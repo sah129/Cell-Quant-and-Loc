@@ -1,13 +1,5 @@
-Figure 5B:  done
+Figure 4A:
 
-Figure 5D:  Wasn't sure how to group, so I just ran each folder separately.  Ran from here because no images in Figure 5E.  didn't detect a lot of cells for BY4741.  I can make changes if needed  
+WT:  did not pick up a lot.  I can make changes to try and fix this if need be. 
 
-
-Figure 6C:
-
-16-06-15 Git1-GFP in aly1aly2 compl BPR raw nd2 files missing, folder was empty
-
-Ran Aly1.  Uploaded individual results as I was unsure how to group
-
-
-Figure 7B: wasn't sure how to group.  Uploaded individual spreadsheets
+Figure 6D Folder still empty

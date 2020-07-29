@@ -1,0 +1,184 @@
+
+
+```{r}
+source('src/functions.R')
+datasetpath <- "Datasets/puncta/maxip_tiffs"
+```
+
+
+```{r, echo = FALSE}
+imageset <- read_in_imageset_files(datasetpath)
+```
+
+```{r}
+r <- imageset[4,]
+channels <- read_in_channels_puncta(r, datasetpath)
+```
+
+```{r}
+t<-rgbImage(red=channels$ip,blue=channels$cmac,green=channels$gfp)
+t2 <- t
+colorMode(t2) <- "Grayscale"
+t2<-normalize(t2)
+display(t2)
+display(normalize(t))
+```
+
+
+
+```{r}
+read_in_channels_puncta <- function(imageset, datasetpath)
+{
+  message("#####################################################")
+  message(paste0("Examining image: ", imageset["filename"]))
+  gfp_path=paste0(datasetpath, "/", imageset["file"], "/", imageset["gfp"])
+  cmac_path=paste0(datasetpath, "/", imageset["file"], "/", imageset["cmac"])
+  
+  gfp = readImage(file.path(paste0(datasetpath, "/", imageset["filepath"])))[,,2]
+  cmac = readImage(file.path(paste0(datasetpath, "/", imageset["filepath"])))[,,1]
+  ip = readImage(file.path(paste0(datasetpath, "/", imageset["filepath"])))[,,3]
+  
+  ref_gfp = readImage(file.path(paste0(datasetpath, "/", imageset["filepath"])),  as.is = TRUE)[,,2]
+  ref_cmac = readImage(file.path(paste0(datasetpath, "/", imageset["filepath"])),  as.is = TRUE)[,,1]
+  ref_ip = readImage(file.path(paste0(datasetpath, "/", imageset["filepath"])),  as.is = TRUE)[,,3]
+  
+  list(cmac = cmac, gfp = gfp, ref_cmac = ref_cmac, ref_gfp = ref_gfp, ip = ip, ref_ip = ref_ip)
+}
+
+
+
+```
+
+```{r}
+get_boundaries <- function(cmac)
+{
+  cells <- cmac > otsu(cmac, levels = 65536)
+  #cells<- opening(cells, kern = makeBrush(7, shape = 'disc'))
+ # cells <-  opening(cells, kern = makeBrush(7, shape = 'Gaussian'))
+  cells <- bwlabel(cells)
+  return(cells)
+}
+```
+
+```{r}
+cells<-get_boundaries(normalize(channels$cmac))
+fc<-computeFeatures.shape(cells)
+sel <- which(fc[,"s.area"]<1000)
+cells<-rmObjects(cells,sel)
+#fc<-computeFeatures(cells, ref = channels$gfp, xname = "cell")
+#res <- exclude_and_bind_puncta(cells, fc, normalize(channels$gfp))
+```
+
+```{r}
+exclude_and_bind_puncta <- function(cells, fc, gfp)
+{
+  df <- data.frame(matrix(NA, nrow = length(table(cells)), ncol = 4))
+  names(df) <- c('CellID', 'puncta_count', 'pm_center_x', 'pm_center_y')
+  
+  l = length(table(cells))-1
+  empty_cells <- vector("list", l) # cells containing no detected vacuoles
+
+  pl = Image(data=0, dim = dim(gfp))
+  # Loop through list of PMs
+  for(i in seq(1:l))
+  {
+    cell <- cells == i
+    puncta <- cell * gfp
+    puncta <- normalize(puncta)
+    
+        
+    pos <- which(puncta > 0)
+    pixels <- puncta[pos]
+    
+    
+    puncta <- puncta > quantile(pixels, 0.98)
+
+
+    puncta <- bwlabel(puncta)
+    pl = pl + puncta
+    puncta_count <- length(table(puncta)[-1])
+    if(puncta_count == 0)
+      empty_cells[i] = i
+    else
+    {
+        df[i,] <- list(CellID = i,
+                       puncta_count = puncta_count,
+                       pm_center_x = fc[i,'cell.0.m.cx'],
+                       pm_center_y = fc[i,'cell.0.m.cy'])
+      
+    }
+  }
+  list(df=df, empty_cells = unlist(empty_cells), pl = pl)
+}
+
+```
+
+```{r}
+gfp <- normalize(channels$gfp)
+cell<-cells == 121
+puncta <- cell*gfp
+bg <- puncta
+display(bg)
+puncta <- normalize(puncta)
+
+pos <- which(puncta > 0)
+pixels <- puncta[pos]
+
+
+puncta <- puncta > quantile(pixels, 0.98)
+p2 <- puncta
+img <- paintObjects(puncta, tgt = channel(bg, "asgreen"), col = c('red','red'))
+display(img)
+```
+
+
+
+
+
+```{r}
+img <- paintObjects(res$pl, tgt = channel(normalize(channels$gfp), "asgreen"), col = c('red','red'))
+img2<-paintObjects(cells, tgt = img, col = 'white')
+display(img2)
+```
+
+
+```{r}
+c<-normalize(channels$cmac + channels$gfp + channels$ip)
+c<- c > otsu(c)
+display(c)
+co <- opening(c, kern = makeBrush(7, shape = 'Gaussian'))
+display(co)
+
+```
+
+
+```{r}
+g<-normalize(channels$gfp)
+pos <- which(g > 0)
+pixels <- g[pos]
+display(g>quantile(pixels,0.98))
+```
+
+```{r}
+get_puncta_display(res$df,channel(g,'asgreen'))
+```
+
+
+```{r}
+get_puncta_display <- function(df,img)
+{
+  plot(img)
+  
+  text(x = df[,'pm_center_x'],
+           y = df[, 'pm_center_y'],
+           labels = df[,"CellID"], 
+           col = "red", 
+           pos = c(2,3), #(2,3) = to the left of and above
+           vfont = c("sans serif", "bold"))
+
+}
+```
+
+
+
+
