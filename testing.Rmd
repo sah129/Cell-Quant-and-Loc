@@ -1,14 +1,16 @@
 
 ```{r}
 source('src/functions.R')
-datasetpath <- "Datasets/Figure 1C/9ArrD 316-9ArrD Aly1-9ArrD Aly2-9ArrD Csr2-9ArrD Ecm21"
+datasetpath <- "Datasets/Figure 4A/WT"
 ```
 Figure 1B: sigma = .3, offset= 0.002, cutoff = 50
 
+"C:\Users\Sarah's Computer\Desktop\Git1 Quant\Sarah\Results No Settings-NewVac\Figure 2C\Images\aly2-del_415Git1_003_final_results.tiff"
+
 ```{r, echo = FALSE}
-imageset <- read_in_imageset_git1_tiffs(datasetpath)
-channels <- read_in_channels_git1_tiffs(imageset[1,], datasetpath)
-img_gray <- convert_to_grayscale_git1(channels)
+imageset <- read_in_imageset_files(datasetpath)
+channels <- read_in_channels(imageset[1,], datasetpath)
+img_gray <- convert_to_grayscale(channels)
 membranes <- detect_membranes_git1(img_gray, channels)
 vacuoles <- find_vacuoles(membranes, img_gray, channels)
 ```
@@ -18,9 +20,13 @@ res <- exclude_and_bind(membranes, vacuoles)
 final<-tidy_up(membranes,vacuoles,res)
 ```
 ```{r}
-final$df
+
+display(normalize(img_gray)[,,gfp_channel])
 ```
 
+```{r}
+display(img_gray[,,gfp_channel])
+```
 
 ```{r}
 res$df

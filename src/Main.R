@@ -21,7 +21,7 @@ pipeline <- function(datasetpath, testing, gui, progress, interactive)
     
     channels <- read_in_channels(imageset[row,], datasetpath)
     img_gray <- convert_to_grayscale(channels)
-    membranes <- detect_membranes(img_gray, channels)
+    membranes <- detect_membranes_new(img_gray, channels)
     vacuoles <- find_vacuoles(membranes, img_gray, channels)
     res <- exclude_and_bind(membranes, vacuoles)
     

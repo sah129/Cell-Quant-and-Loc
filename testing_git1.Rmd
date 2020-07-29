@@ -2,7 +2,7 @@
 ```{r setup, include=FALSE}
 source('src/functions.R')
 source('src/Main.R')
-datasetpath <- "Datasets/Figure 7B"
+datasetpath <- "Datasets/Figure S1"
 ```
 
 "Datasets/Figure 2C Bul Data/Bul1-del"
@@ -22,9 +22,11 @@ res <- pipeline(datasetpath, testing=FALSE, gui=FALSE, progress=NULL, interactiv
 #groups = list("aly1-del_aly2-del", "aly2-del", "BY4741")
 #groups = list("9ArrD 316", "9ArrD Aiy1", "9ArrD Aly2", "9ArrD Csr2", "9ArrD Ecm21", "9ArrD Ldb19", "9ArrD Rod1", "9ArrD Rog3", "9ArrD Ylr392c", "9ArrDYgr068c")
 
-groups = list("BY4741")
-
-sort_data(res, groups)
+#groups = list("Aly1delAly2del", "Apl1del", "Apl3del", "BY4741", "Cnb1del", "End3del", "Vrp1del")
+#groups = list("DMSO_50uMGPI_120min", "LatA_50uMGPI_120min", "DMSO_NoGPI", "LatA_NoGPI")
+#groups = list("Time0", "Time60", "Time120")
+groups = list("9Arr-del_415Git1", "aly1-del_415Git1", "aly1-del_aly2-del_415Git1", "aly2-del_415Git1", "Bul1-del_415Git1", "Bul1-del+Bul2-del_415Git1", "Bul2-del_415Git1", "BY4741(2)_415Git1", "BY4741_415Git1")
+sort_data(res, groups, "Figure S1")
 ```
 
 ```{r}

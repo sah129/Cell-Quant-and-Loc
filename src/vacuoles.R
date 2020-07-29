@@ -32,12 +32,7 @@ find_vacuoles <- function(cell_info, img, channels)
 # fragment PM objects, list of PMs where no vacuoles are found.
 exclude_and_bind <- function(mems, vacs)
 {
-  oc <- ocontour(mems$membranes)
-  left <- lapply(oc, function(x){min(x[,1])})
-  right <- lapply(oc, function(x){max(x[,1])})
-  top <- lapply(oc, function(x){min(x[,2])})
-  bottom <- lapply(oc, function(x){max(x[,2])})
-  
+
   df <- data.frame(matrix(NA, nrow = length(table(mems$membranes)), ncol = 9))
   names(df) <- c('CellID', 'vacuoles', 'cell_area', 'vac_area', 'PM_vac_ratio', 'cell_mpi', 'vac_mpi', 'pm_center_x', 'pm_center_y')
   

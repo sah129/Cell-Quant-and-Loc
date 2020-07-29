@@ -18,6 +18,23 @@ detect_membranes <-function(img, channels)
   list(removed = res$removed, membranes = res$membranes, FM = res$FM)
 }
 
+detect_membranes_new <-function(img, channels)
+{
+  message("########################CELLS########################")
+  
+  g <- gblur(img[,,gfp_channel]*16, sigma = 2)
+  
+  ct = thresh(g)
+  cm = bwlabel(ct)
+  fm <- computeFeatures.shape(cm)
+  noise <- which(fm[,"s.area"]< 100) # noise removal
+  
+  membranes <- rmObjects(cm, noise)
+  res <- remove_edge_membranes(membranes, img, channels)
+  
+  message(paste0("Number of cells detected on first pass: ", length(table(membranes))))
+  list(removed = res$removed, membranes = res$membranes, FM = res$FM)
+}
 # Removes detected membranes that intersect with image edges.  Saves removed
 # membranes and computes complete features on all membranes in reference to
 # unaltered GFP channel. 
