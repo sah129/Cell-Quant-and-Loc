@@ -1,7 +1,7 @@
 
 ```{r}
 source('src/functions.R')
-datasetpath <- "Datasets/Figure 4A/WT"
+datasetpath <- "Datasets/2020-07-14 Ato2"
 ```
 Figure 1B: sigma = .3, offset= 0.002, cutoff = 50
 
@@ -9,9 +9,9 @@ Figure 1B: sigma = .3, offset= 0.002, cutoff = 50
 
 ```{r, echo = FALSE}
 imageset <- read_in_imageset_files(datasetpath)
-channels <- read_in_channels(imageset[1,], datasetpath)
+channels <- read_in_channels(imageset[5,], datasetpath)
 img_gray <- convert_to_grayscale(channels)
-membranes <- detect_membranes_git1(img_gray, channels)
+membranes <- detect_membranes_new(img_gray, channels,16)
 vacuoles <- find_vacuoles(membranes, img_gray, channels)
 ```
 
@@ -19,9 +19,21 @@ vacuoles <- find_vacuoles(membranes, img_gray, channels)
 res <- exclude_and_bind(membranes, vacuoles)
 final<-tidy_up(membranes,vacuoles,res)
 ```
-```{r}
 
-display(normalize(img_gray)[,,gfp_channel])
+
+```{r}
+ # c<-clahe(ngfp, nx = 4, ny = 4, limit=2, keep.range = TRUE)
+  g <- gblur(img_gray[,,gfp_channel]*16, sigma = 2)
+  ct = thresh(g)
+  cm = bwlabel(ct)
+  fm <- computeFeatures.shape(cm)
+  noise <- which(fm[,"s.area"]< 100) # noise removal
+  
+  m <- rmObjects(cm, noise)
+  display(m)
+  
+  res<-remove_edge_membranes(m, img_gray, channels)
+  display(res$membranes)
 ```
 
 ```{r}
@@ -48,7 +60,7 @@ get_display_img(df = final$df,
                 membranes = final$membranes, 
                 col_membranes = 'white', 
                 vacuoles = final$vacuoles, 
-                col_vacuoles ='blue', 
+                col_vacuoles ='yellow', 
                 removed = membranes$removed,
                 closed_vacuoles = TRUE, 
                 img = toRGB(channels$gfp), 

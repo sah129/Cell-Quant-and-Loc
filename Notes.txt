@@ -3,3 +3,24 @@ Figure 4A:
 WT:  did not pick up a lot.  I can make changes to try and fix this if need be. 
 
 Figure 6D Folder still empty
+
+
+PUNCTA FOLDER:  imaging data/20-06-94/decon/maxIP
+
+
+
+BY4741
+>        BY4741+GPI
+>        Aly1
+>        Aly1+GPI
+>        Aly2
+>        Aly2+GPI       
+>        Aly1Aly2
+>        Aly1Aly2+GPI
+
+
+"BY4741 PLC Delta", "alyaly2D PLC Delta CMAC", "aly1D PLC Delta CMAC", "aly1D PLC Delta GPI CMAC",
+
+"aly1Daly2D PLC Delta GPI CMAC", "aly2D PLC Delta CMAC", "aly2D PLC Delta GPI CMAC",
+
+"By4741 PLC Delta GPI CMAC"

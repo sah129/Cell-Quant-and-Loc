@@ -2,7 +2,7 @@
 ```{r setup, include=FALSE}
 source('src/functions.R')
 source('src/Main.R')
-datasetpath <- "Datasets/Figure S1"
+datasetpath <- "Datasets/2020-07-14 Ato2"
 ```
 
 "Datasets/Figure 2C Bul Data/Bul1-del"
@@ -10,23 +10,43 @@ datasetpath <- "Datasets/Figure S1"
 "Datasets/Figure 1C/9ArrD 316-9ArrD Aly1-9ArrD Aly2-9ArrD Csr2-9ArrD Ecm21"
 
 ```{r}
+start <- Sys.time()
 res <- pipeline(datasetpath, testing=FALSE, gui=FALSE, progress=NULL, interactive = FALSE)
+end = Sys.time()
+
+print(paste0("Pipeline completed.  Processed ", length(res), " images in ", (end-start), " minutes."))
 ```
 
 ```{r}
-#groups = list("9ArrD 316", "9ArrD Aiy1", "9ArrD Aly2", "9ArrD Csr2", "9ArrD Ecm21", "9ArrD Ldb19", "9ArrD Rod1", "9ArrD Rog3", "9ArrD Ylr392c", "9ArrDYgr068c", "WT 316")
-#groups = list("9Arr-del","aly1-del") 
+#groups = list("9ArrD 316", "9ArrD Aiy1", "9ArrD Aly2", "9ArrD Csr2", "9ArrD Ecm21", "9ArrD Ldb19", "9ArrD Rod1", "9ArrD Rog3", "9ArrD Ylr392c", "9ArrDYgr068c")
+#groups = list("9Arr-del","aly1-del_415", "aly1-del_aly2-del", "aly2-del_415","BY4741") #Figure 2C 
 #groups = list("Bul1-del")
 #groups =  list("Aly1delAly2del", "Apl1del", "Apl3del", "BY4741", "End3del", "Vrp1del")
-#groups = list("Bul1-del+Bul2-del","Bul2-del")
+
+#groups = list("Bul1-del+Bul2-del","Bul2-del_415", "Bul1-del_415") # Figure 2C Bul Data
 #groups = list("aly1-del_aly2-del", "aly2-del", "BY4741")
 #groups = list("9ArrD 316", "9ArrD Aiy1", "9ArrD Aly2", "9ArrD Csr2", "9ArrD Ecm21", "9ArrD Ldb19", "9ArrD Rod1", "9ArrD Rog3", "9ArrD Ylr392c", "9ArrDYgr068c")
 
-#groups = list("Aly1delAly2del", "Apl1del", "Apl3del", "BY4741", "Cnb1del", "End3del", "Vrp1del")
-#groups = list("DMSO_50uMGPI_120min", "LatA_50uMGPI_120min", "DMSO_NoGPI", "LatA_NoGPI")
+#groups = list("Aly1delAly2del", "Apl1del", "Apl3del", "BY4741", "Cnb1del", "End3del", "Vrp1del") #Figure 5C
+
+#groups = list("DMSO_50uMGPI_120min", "LatA_50uMGPI_120min", "DMSO_NoGPI", "LatA_NoGPI")  #Figure 5E
+
 #groups = list("Time0", "Time60", "Time120")
-groups = list("9Arr-del_415Git1", "aly1-del_415Git1", "aly1-del_aly2-del_415Git1", "aly2-del_415Git1", "Bul1-del_415Git1", "Bul1-del+Bul2-del_415Git1", "Bul2-del_415Git1", "BY4741(2)_415Git1", "BY4741_415Git1")
-sort_data(res, groups, "Figure S1")
+
+#groups = list("Aly1Aly2del_Git1_Aly1_", "Aly1Aly2del_Git1_pRS316_Run2", "BY4741_Git1_pRS316") #Figure 6C Aly1 or Aly2 or 7C
+
+#groups = list("9Arr-del_415Git1", "aly1-del_415Git1", "aly1-del_aly2-del_415Git1", "aly2-del_415Git1", "Bul1-del_415Git1", "Bul1-del+Bul2-del_415Git1", "Bul2-del_415Git1", "BY4741(2)_415Git1", "BY4741_415Git1")
+
+
+#groups = list("Aly1Aly2del_Git1_Aly1-5A","Aly1Aly2del_Git1_Aly1-5E","Aly1Aly2del_Git1_Aly1-AAAAAA","Aly1Aly2del_Git1_Aly1-PILKIN", "Aly1Aly2del_Git1_Aly1-PVIVIT")
+
+#groups = list("9Arr-del_415", "aly1-del_415", "aly1-del_aly2-del_415", "aly2-del_415", "Bul1-del_415", "Bul1-del+Bul2-del_415", "Bul2-del_415", "BY4741(2)", "BY4741_415")
+
+#groups = list("BY4741 PLC Delta 00", "aly1aly2D PLC Delta CMAC", "aly1D PLC Delta CMAC", "aly1D PLC Delta GPI CMAC","aly1Daly2D PLC Delta GPI CMAC", "aly2D PLC Delta CMAC", "aly2D PLC Delta GPI CMAC","By4741 PLC Delta GPI CMAC")
+
+
+groups = list("9ArrD Ato2 A", "9ArrD Ato2 C", "BY4741 Ato2 A", "BY4741 Ato2 B", "Idb19D Ato2 A", "Idb19D Ato2 B")
+sort_data(res, groups, "2020-07-14 Ato2")
 ```
 
 ```{r}

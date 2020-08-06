@@ -18,11 +18,11 @@ detect_membranes <-function(img, channels)
   list(removed = res$removed, membranes = res$membranes, FM = res$FM)
 }
 
-detect_membranes_new <-function(img, channels)
+detect_membranes_new <-function(img, channels, factor)
 {
   message("########################CELLS########################")
   
-  g <- gblur(img[,,gfp_channel]*16, sigma = 2)
+  g <- gblur(img[,,gfp_channel]*factor, sigma = 2)
   
   ct = thresh(g)
   cm = bwlabel(ct)

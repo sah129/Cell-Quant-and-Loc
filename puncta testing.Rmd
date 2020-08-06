@@ -49,25 +49,7 @@ read_in_channels_puncta <- function(imageset, datasetpath)
 
 ```
 
-```{r}
-get_boundaries <- function(cmac)
-{
-  cells <- cmac > otsu(cmac, levels = 65536)
-  #cells<- opening(cells, kern = makeBrush(7, shape = 'disc'))
- # cells <-  opening(cells, kern = makeBrush(7, shape = 'Gaussian'))
-  cells <- bwlabel(cells)
-  return(cells)
-}
-```
 
-```{r}
-cells<-get_boundaries(normalize(channels$cmac))
-fc<-computeFeatures.shape(cells)
-sel <- which(fc[,"s.area"]<1000)
-cells<-rmObjects(cells,sel)
-#fc<-computeFeatures(cells, ref = channels$gfp, xname = "cell")
-#res <- exclude_and_bind_puncta(cells, fc, normalize(channels$gfp))
-```
 
 ```{r}
 exclude_and_bind_puncta <- function(cells, fc, gfp)
@@ -142,15 +124,6 @@ display(img2)
 ```
 
 
-```{r}
-c<-normalize(channels$cmac + channels$gfp + channels$ip)
-c<- c > otsu(c)
-display(c)
-co <- opening(c, kern = makeBrush(7, shape = 'Gaussian'))
-display(co)
-
-```
-
 
 ```{r}
 g<-normalize(channels$gfp)
@@ -178,6 +151,77 @@ get_puncta_display <- function(df,img)
 
 }
 ```
+
+
+
+
+```{r}
+get_boundaries <- function(channels)
+{
+  n<-normalize(channels$cmac)
+  g<-gblur(n,sigma=5)
+  gt<-thresh(g)
+  cells <- bwlabel(gt)
+  fc<-computeFeatures.shape(cells)
+  sel <- which(fc[,"s.area"]<100)
+  cells <- rmObjects(cells, sel)
+  
+  l = length(table(cells))-1
+  empty_cells <- vector("list", l) # cells containing no detected vacuoles
+  
+   
+  for(i in seq(1:l))
+  {
+      cell <- cells == i
+      if(all(fillHull(cell) == cell))
+      {
+        empty_cells[i] = i
+      }
+  }
+  empty_cells <- unlist(empty_cells)
+  cells <- rmObjects(cells, empty_cells)
+  cells<-fillHull(cells)
+  cells<-dilate(cells, kern = makeBrush(5, shape = 'disc'))
+  return(cells)
+}
+```
+
+```{r}
+cells<-get_boundaries(channels)
+fc <- computeFeatures(cells, ref = channels$ref_gfp, xname = 'cell')
+res<-exclude_and_bind_puncta(cells,fc,normalize(channels$gfp))
+```
+
+```{r}
+t<-paintObjects(cells, tgt = channel(normalize(channels$gfp), 'asgreen'), col = 'red')
+tt<-paintObjects(res$pl, tgt = t, col = c('blue','blue'))
+display(tt)
+```
+
+
+
+
+
+```{r}
+
+
+t<-paintObjects(cells, tgt= channel(normalize(channels$cmac), 'asblue'), col = 'red')
+display(t)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
