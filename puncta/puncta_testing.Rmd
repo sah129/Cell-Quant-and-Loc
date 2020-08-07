@@ -1,0 +1,19 @@
+```{r}
+source('puncta_main.R')
+source('puncta_functions.R')
+datasetpath <- "../Datasets/puncta/maxip_tiffs"
+```
+
+```{r}
+res<-puncta_count(datasetpath)
+```
+
+
+```{r}
+display(res[[1]]$img)
+display(res[[2]]$img)
+display(res[[3]]$img)
+display(res[[4]]$img)
+display(res[[5]]$img)
+```
+
