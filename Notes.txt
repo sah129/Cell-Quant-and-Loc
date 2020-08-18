@@ -24,3 +24,6 @@ BY4741
 "aly1Daly2D PLC Delta GPI CMAC", "aly2D PLC Delta CMAC", "aly2D PLC Delta GPI CMAC",
 
 "By4741 PLC Delta GPI CMAC"
+
+
+cutoff is 100 for Git1, 100 for pmvacquantratios

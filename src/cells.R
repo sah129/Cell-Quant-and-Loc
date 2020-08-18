@@ -18,7 +18,7 @@ detect_membranes <-function(img, channels)
   list(removed = res$removed, membranes = res$membranes, FM = res$FM)
 }
 
-detect_membranes_new <-function(img, channels, factor, chan)
+detect_membranes_new <-function(img, channels, factor, chan, cutoff)
 {
   message("########################CELLS########################")
   
@@ -27,7 +27,7 @@ detect_membranes_new <-function(img, channels, factor, chan)
   ct = thresh(g)
   cm = bwlabel(ct)
   fm <- computeFeatures.shape(cm)
-  noise <- which(fm[,"s.area"]< 100) # noise removal
+  noise <- which(fm[,"s.area"]< cutoff) # noise removal
   
   membranes <- rmObjects(cm, noise)
   res <- remove_edge_membranes(membranes, img, channels)

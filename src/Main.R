@@ -7,7 +7,7 @@ source("src/functions.R")
 # gui:  set to true when using the GUI.  See app.R.
 # progress:  holds information for progress updates when using the GUI.
 # interactive:  set to manually prune results in GUI
-pipeline <- function(datasetpath, testing, gui, progress, interactive, factor, chan)
+pipeline <- function(datasetpath, testing, gui, progress, interactive, factor, chan, cutoff)
 {
   if(testing)
     return(readRDS("Demo/Saved Results/presentation_results.rds"))
@@ -22,7 +22,7 @@ pipeline <- function(datasetpath, testing, gui, progress, interactive, factor, c
     channels <- read_in_channels(imageset[row,], datasetpath)
     img_gray <- convert_to_grayscale(channels)
    
-    membranes <- detect_membranes_new(img_gray, channels, factor, img_gray[,,chan])
+    membranes <- detect_membranes_new(img_gray, channels, factor, img_gray[,,chan], cutoff)
     vacuoles <- find_vacuoles(membranes, img_gray, channels)
     res <- exclude_and_bind(membranes, vacuoles)
     
