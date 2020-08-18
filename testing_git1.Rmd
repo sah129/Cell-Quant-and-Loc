@@ -2,7 +2,7 @@
 ```{r setup, include=FALSE}
 source('src/functions.R')
 source('src/Main.R')
-datasetpath <- "Datasets/2020-07-14 Ato2"
+datasetpath <- "Datasets/samp"
 ```
 
 "Datasets/Figure 2C Bul Data/Bul1-del"
@@ -11,7 +11,7 @@ datasetpath <- "Datasets/2020-07-14 Ato2"
 
 ```{r}
 start <- Sys.time()
-res <- pipeline(datasetpath, testing=FALSE, gui=FALSE, progress=NULL, interactive = FALSE)
+res <- pipeline(datasetpath, testing=FALSE, gui=FALSE, progress=NULL, interactive = FALSE, factor, dic_channel)
 end = Sys.time()
 
 print(paste0("Pipeline completed.  Processed ", length(res), " images in ", (end-start), " minutes."))
@@ -42,11 +42,11 @@ print(paste0("Pipeline completed.  Processed ", length(res), " images in ", (end
 
 #groups = list("9Arr-del_415", "aly1-del_415", "aly1-del_aly2-del_415", "aly2-del_415", "Bul1-del_415", "Bul1-del+Bul2-del_415", "Bul2-del_415", "BY4741(2)", "BY4741_415")
 
-#groups = list("BY4741 PLC Delta 00", "aly1aly2D PLC Delta CMAC", "aly1D PLC Delta CMAC", "aly1D PLC Delta GPI CMAC","aly1Daly2D PLC Delta GPI CMAC", "aly2D PLC Delta CMAC", "aly2D PLC Delta GPI CMAC","By4741 PLC Delta GPI CMAC")
+groups = list("BY4741 PLC Delta 00", "aly1aly2D PLC Delta CMAC", "aly1D PLC Delta CMAC", "aly1D PLC Delta GPI CMAC","aly1Daly2D PLC Delta GPI CMAC", "aly2D PLC Delta CMAC", "aly2D PLC Delta GPI CMAC","By4741 PLC Delta GPI CMAC")
 
 
-groups = list("9ArrD Ato2 A", "9ArrD Ato2 C", "BY4741 Ato2 A", "BY4741 Ato2 B", "Idb19D Ato2 A", "Idb19D Ato2 B")
-sort_data(res, groups, "2020-07-14 Ato2")
+#groups = list("9ArrD Ato2 A", "9ArrD Ato2 C", "BY4741 Ato2 A", "BY4741 Ato2 B", "Idb19D Ato2 A", "Idb19D Ato2 B")
+sort_data(res, groups, "Lipid Markers")
 ```
 
 ```{r}

@@ -11,7 +11,7 @@ Figure 1B: sigma = .3, offset= 0.002, cutoff = 50
 imageset <- read_in_imageset_files(datasetpath)
 channels <- read_in_channels(imageset[5,], datasetpath)
 img_gray <- convert_to_grayscale(channels)
-membranes <- detect_membranes_new(img_gray, channels,16)
+membranes <- detect_membranes_new(img_gray, channels,16, img_gray[,,dic_channel])
 vacuoles <- find_vacuoles(membranes, img_gray, channels)
 ```
 
@@ -49,6 +49,32 @@ res$df
 ```{r}
 display(res$membranes)
 ```
+
+```{r}
+detect_membranes_alternate <- function(channels)
+{
+    cmac <- normalize(channels$cmac*16)
+    gfp <- normalize(channels$gfp)
+    
+    vacs <- cmac > otsu(cmac)
+    gfp <- gfp*(1-vacs)
+    mems <- thresh(gfp)
+    return(mems)
+}
+
+```
+
+```{r}
+mems <- detect_membranes_alternate(channels)
+```
+
+
+```{r}
+p<-paintObjects(mems, tgt = channels$gfp, col = c('white','white'))
+display(p)
+```
+
+
 
 
 

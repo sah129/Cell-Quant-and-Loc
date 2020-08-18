@@ -57,13 +57,12 @@ read_in_imageset_files <- function(datapath)
 
 # Function to read and store channels from image.   Also stores unaltered
 # pixel intensity matrices to reference when computing features later.
-read_in_channels <- function(imageset, datasetpath)
+read_in_channels_old <- function(imageset, datasetpath)
 {
   message("#####################################################")
   message(paste0("Examining image: ", imageset["filename"]))
-  gfp_path=paste0(datasetpath, "/", imageset["file"], "/", imageset["gfp"])
-  cmac_path=paste0(datasetpath, "/", imageset["file"], "/", imageset["cmac"])
-  
+ 
+
   gfp = readImage(file.path(paste0(datasetpath, "/", imageset["filepath"])))[,,2]
   cmac = readImage(file.path(paste0(datasetpath, "/", imageset["filepath"])))[,,1]
   
@@ -71,6 +70,37 @@ read_in_channels <- function(imageset, datasetpath)
   ref_cmac = readImage(file.path(paste0(datasetpath, "/", imageset["filepath"])),  as.is = TRUE)[,,1]
   
   list(cmac = cmac, gfp = gfp, ref_cmac = ref_cmac, ref_gfp = ref_gfp)
+}
+
+read_in_channels <- function(imageset, datasetpath)
+{
+  message("#####################################################")
+  message(paste0("Examining image: ", imageset["filename"]))
+  
+  img <- readImage(file.path(paste0(datasetpath, "/", imageset["filepath"])))
+  
+  gfp <- img[,,2]
+  cmac <- img[,,1]
+  dic <- NULL
+  
+  ref_img <- readImage(file.path(paste0(datasetpath, "/", imageset["filepath"])),  as.is = TRUE)
+  
+  ref_gfp <- ref_img[,,2]
+  ref_cmac <- ref_img[,,1]
+  ref_dic <- NULL
+  
+  if(numberOfFrames(img) == 3)
+  {
+      dic <- img[,,3]
+      ref_dic <- ref_img[,,3]
+  }
+  
+  list(cmac = cmac, 
+       gfp = gfp, 
+       dic = dic,
+       ref_cmac = ref_cmac, 
+       ref_gfp = ref_gfp,
+       ref_dic = ref_dic)
 }
 
 
