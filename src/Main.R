@@ -9,6 +9,8 @@ source("src/functions.R")
 # interactive:  set to manually prune results in GUI
 pipeline <- function(datasetpath, testing, gui, progress, interactive, factor, chan, cutoff)
 {
+  unsuccessful = list()
+  
   if(testing)
     return(readRDS("Demo/Saved Results/presentation_results.rds"))
   
@@ -16,6 +18,10 @@ pipeline <- function(datasetpath, testing, gui, progress, interactive, factor, c
   results = list()
   for( row in 1:nrow(imageset))
   {
+    out <- tryCatch(
+      {
+        
+      
     if(gui)
       progress$inc(1/nrow(imageset), detail = paste0(imageset[row,"filename"], "(", row, "/",nrow(imageset),")" ))
     
@@ -63,20 +69,27 @@ pipeline <- function(datasetpath, testing, gui, progress, interactive, factor, c
     
     write.csv(final$df, paste0("FinalOutput/Individual Spreadsheets/",imageset[row, "filename"], '_results.csv'), row.names=FALSE)
     results[[row]] <- list(df = final$df,
-                        #   img_gray = img_gray,
-                          # channels = channels, 
+                     
                            filename = imageset[row, "filename"])
-                        #   membranes = final$membranes,
-                       #    vacuoles = final$vacuoles,
-                      #     mem_pts = mem_pts,
-                         #  vac_pts = vac_pts,
-                        #   removed_pts = removed_pts)
+                  
     
     
     
-    
+      },
+    error = function(cond)
+    {
+      print(paste0("Error analyzing ", imageset[row,"filename"]))
+      print(cond)
+      results[[row]] <- NULL
+      unsuccessful <- c(unsuccessful, imageset[row,"filename"])
+      
+    }
+    )
   }
   message("End of main")
+  print("UNSUCCESSFUL FILES: ")
+  for(file in unsuccessful)
+    print(file)
   return(results)
 }
 

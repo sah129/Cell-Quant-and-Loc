@@ -9,7 +9,7 @@ require(Hmisc)
 ```{r setup, include=FALSE}
 source('src/functions.R')
 source('src/Main.R')
-datasetpath <- "Datasets/Pmtovacratioquants/2020-07-23 Ste3"
+datasetpath <- "Datasets/samp"
 ```
 
 "Datasets/Figure 2C Bul Data/Bul1-del"
@@ -18,7 +18,7 @@ datasetpath <- "Datasets/Pmtovacratioquants/2020-07-23 Ste3"
 
 ```{r}
 start <- Sys.time()
-res <- pipeline(datasetpath, testing=FALSE, gui=FALSE, progress=NULL, interactive = FALSE, 4, dic_channel, 1000)
+res <- pipeline(datasetpath, testing=FALSE, gui=FALSE, progress=NULL, interactive = FALSE, 16, gfp_channel, 1000)
 end = Sys.time()
 
 print(paste0("Pipeline completed.  Processed ", length(res), " images in ", (end-start), " minutes."))
