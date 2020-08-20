@@ -56,7 +56,7 @@ pipeline <- function(datasetpath, testing, gui, progress, interactive, factor, c
                     removed = membranes$removed,
                     closed_vacuoles = TRUE, 
                     img = channels$gfp, 
-                    showRemoved = TRUE, 
+                    showRemoved = FALSE, 
                     showMemLabels = TRUE, 
                     showVacLabels = FALSE)
     dev.off()

@@ -22,6 +22,7 @@ detect_membranes_new <-function(img, channels, factor, chan, cutoff)
 {
   message("########################CELLS########################")
   
+ # chan <- normalize(chan)
   g <- gblur(chan*factor, sigma = 2)
   
   ct = thresh(g)

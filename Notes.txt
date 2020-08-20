@@ -27,3 +27,19 @@ BY4741
 
 
 cutoff is 100 for Git1, 100 for pmvacquantratios
+
+
+IMAGEJ:
+
+For finding cutoff as an input param:
+
+Analyze->set scale.  Click to remove scale
+
+Analyze -> measure 
+
+
+Idea for GUI:
+
+Have them set cutoff and choose sample image.  Run the image for 4 or 5 different brightness levels, display all at once.  Let them pick which one looks best. 
+
+Do this for DIC and GFP

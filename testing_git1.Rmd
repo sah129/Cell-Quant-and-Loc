@@ -1,8 +1,15 @@
 
+```{r}
+require(ggplot2)
+require(reshape2)
+require(Hmisc)
+```
+
+
 ```{r setup, include=FALSE}
 source('src/functions.R')
 source('src/Main.R')
-datasetpath <- "Datasets/samp"
+datasetpath <- "Datasets/Pmtovacratioquants/2020-07-23 Ste3"
 ```
 
 "Datasets/Figure 2C Bul Data/Bul1-del"
@@ -11,11 +18,52 @@ datasetpath <- "Datasets/samp"
 
 ```{r}
 start <- Sys.time()
-res <- pipeline(datasetpath, testing=FALSE, gui=FALSE, progress=NULL, interactive = FALSE, factor, dic_channel)
+res <- pipeline(datasetpath, testing=FALSE, gui=FALSE, progress=NULL, interactive = FALSE, 4, dic_channel, 1000)
 end = Sys.time()
 
 print(paste0("Pipeline completed.  Processed ", length(res), " images in ", (end-start), " minutes."))
 ```
+
+```{r}
+#groups = list("9ArrD Ato2 A", "9ArrD Ato2 C", "BY4741 Ato2 A", "BY4741 Ato2 B", "ldb19D Ato2 A", "ldb19D Ato2 B")
+#groups = list("BY4741 Ctr1 A", "BY4741 Ctr1 B", "ldb19D Ctr1 A", "ldb19D Ctr1 B", "9ArrD Ctr1 C", "9ArrD Ctr1 D")
+#groups = list("9ArrD Pma1 A", "9ArrD Pma1 B", "aly1Daly2D Pma1 A", "aly1Daly2D Pma1 B", "BY4741 Pma1 A", "BY4741 Pma1 B", "ldb19D Pma1 A", "ldb19D Pma1 B")
+#groups = list("9ArrD Skg6 A", "9ArrD Skg6 B", "BY4741 Skg6 A", "BY4741 Skg6 B", "ldb19D Skg6 A", "ldb19D Skg6 B")
+name = "2020-07-23 Ste3"
+groups = list("9ArrD Ste3 A", "9ArrD Ste3 B", "aly1Daly2D Ste3 A", "aly1Daly2D Ste3 B",   "BY4742 Ste3 A", "BY4742 Ste3 B", "ldb19D Ste3 A", "ldb19D Ste3 B")
+sort_data(res, groups, name)
+```
+
+
+```{r}
+
+grouped_path = paste0("FinalOutput/Aggregated Spreadsheets/", name, "_pm_vac_ratio_grouped.csv")
+#grouped_path = paste0("Graphs/",name,"_pm_vac_ratio_grouped.csv")
+df<-read.csv(grouped_path, check.names = FALSE)
+df
+
+```
+```{r}
+res_graph <- ggplot(data = melt(df), aes(x = variable, y = value))+
+  geom_dotplot(binaxis="y", stackdir = "center", stackratio = 0.5, binwidth=0.01, alpha=0.5, aes(color=variable), dotsize = 1.5) + 
+  xlab("\nGroup") + 
+  ylab("PM/vac ratio") + 
+  ggtitle(paste0(name, " PM/vac ratio")) +
+  stat_summary(fun.data=mean_sdl, fun.args = list(mult=1), 
+        geom="errorbar", color="black", width=0.5) +
+  stat_summary(fun.y="mean", geom="point", color="black") +scale_x_discrete() + 
+  theme(legend.position = "none",axis.text.x=element_text(angle = -45, hjust = 0))
+
+
+res_graph
+ggsave(paste0("graphs/",name," Result Graph.png"), res_graph, device= "png", limitsize = FALSE)
+  
+```
+
+```{r}
+melt(df)
+```
+
 
 ```{r}
 #groups = list("9ArrD 316", "9ArrD Aiy1", "9ArrD Aly2", "9ArrD Csr2", "9ArrD Ecm21", "9ArrD Ldb19", "9ArrD Rod1", "9ArrD Rog3", "9ArrD Ylr392c", "9ArrDYgr068c")
@@ -42,12 +90,11 @@ print(paste0("Pipeline completed.  Processed ", length(res), " images in ", (end
 
 #groups = list("9Arr-del_415", "aly1-del_415", "aly1-del_aly2-del_415", "aly2-del_415", "Bul1-del_415", "Bul1-del+Bul2-del_415", "Bul2-del_415", "BY4741(2)", "BY4741_415")
 
-groups = list("BY4741 PLC Delta 00", "aly1aly2D PLC Delta CMAC", "aly1D PLC Delta CMAC", "aly1D PLC Delta GPI CMAC","aly1Daly2D PLC Delta GPI CMAC", "aly2D PLC Delta CMAC", "aly2D PLC Delta GPI CMAC","By4741 PLC Delta GPI CMAC")
-
-
-#groups = list("9ArrD Ato2 A", "9ArrD Ato2 C", "BY4741 Ato2 A", "BY4741 Ato2 B", "Idb19D Ato2 A", "Idb19D Ato2 B")
-sort_data(res, groups, "Lipid Markers")
+#groups = list("BY4741 PLC Delta 00", "aly1aly2D PLC Delta CMAC", "aly1D PLC Delta CMAC", "aly1D PLC Delta GPI CMAC","aly1Daly2D PLC Delta GPI CMAC", "aly2D PLC Delta CMAC", "aly2D PLC Delta GPI CMAC","By4741 PLC Delta GPI CMAC")
 ```
+
+
+
 
 ```{r}
 r <- res[[2]]
