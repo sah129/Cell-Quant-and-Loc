@@ -17,6 +17,9 @@ fill_df <- function(res, df, category)
 # Group individual experiment types, aggregate, and output
 group_types <- function(df, groups)
 {
+  completed <- c()
+  test <<- c(1:nrow(df))
+  
   df_new = data.frame(Image="df new placeholder") 
   
   aggregated = vector("list", nrow(df))
@@ -27,6 +30,8 @@ group_types <- function(df, groups)
     print("############################")
     print(group)
     print(rows)
+    
+    completed <- c(completed, rows)
     
     for(row in rows)
     {
@@ -42,6 +47,13 @@ group_types <- function(df, groups)
     df_new <- merge(df_new, df_row, all.x= TRUE, all.y = TRUE)
   }
   df_new <- df_new[-1,]
+  
+  completedtest<<-completed
+  
+  if(all(completed == test))
+    print("SORT SUCCESSFUL")
+  else
+    print("ERROR SORTING")
   print(df)
   return(df_new)
 }
