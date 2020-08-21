@@ -3,11 +3,14 @@ fill_df <- function(res, df, category)
 {
   for(i in 1:length(res))
   {
-    df_row <- data.frame(t(res[[i]]$df[category]), row.names=NULL)
-    colnames(df_row) <-  t(res[[i]]$df["CellID"])
-    
-    df_row <- cbind(Image = res[[i]]$filename[[1]], df_row)
-    df <- merge(df, df_row, all.x = TRUE, all.y= TRUE)
+    if(!is.null(res[[i]]))
+    {
+      df_row <- data.frame(t(res[[i]]$df[category]), row.names=NULL)
+      colnames(df_row) <-  t(res[[i]]$df["CellID"])
+      
+      df_row <- cbind(Image = res[[i]]$filename[[1]], df_row)
+      df <- merge(df, df_row, all.x = TRUE, all.y= TRUE)
+    }
   }
   return(df)
 }

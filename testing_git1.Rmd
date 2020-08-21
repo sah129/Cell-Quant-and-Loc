@@ -9,7 +9,8 @@ require(Hmisc)
 ```{r setup, include=FALSE}
 source('src/functions.R')
 source('src/Main.R')
-datasetpath <- "Datasets/samp"
+datasetpath <- "Datasets/complimentation/2020-08-20 Qdr2 complementation - colony A"
+
 ```
 
 "Datasets/Figure 2C Bul Data/Bul1-del"
@@ -29,8 +30,20 @@ print(paste0("Pipeline completed.  Processed ", length(res), " images in ", (end
 #groups = list("BY4741 Ctr1 A", "BY4741 Ctr1 B", "ldb19D Ctr1 A", "ldb19D Ctr1 B", "9ArrD Ctr1 C", "9ArrD Ctr1 D")
 #groups = list("9ArrD Pma1 A", "9ArrD Pma1 B", "aly1Daly2D Pma1 A", "aly1Daly2D Pma1 B", "BY4741 Pma1 A", "BY4741 Pma1 B", "ldb19D Pma1 A", "ldb19D Pma1 B")
 #groups = list("9ArrD Skg6 A", "9ArrD Skg6 B", "BY4741 Skg6 A", "BY4741 Skg6 B", "ldb19D Skg6 A", "ldb19D Skg6 B")
-name = "2020-07-23 Ste3"
-groups = list("9ArrD Ste3 A", "9ArrD Ste3 B", "aly1Daly2D Ste3 A", "aly1Daly2D Ste3 B",   "BY4742 Ste3 A", "BY4742 Ste3 B", "ldb19D Ste3 A", "ldb19D Ste3 B")
+name = "2020-08-20 Qdr2 Complementation - colony A"
+groups = list("9ArrD Qdr2 316", 
+             # "9ArrD Qdr2 Aly1 PYless_", 
+              "9ArrD Qdr2 Aly1_", 
+              "9ArrD Qdr2 Aly2 PYless_", 
+              "9ArrD Qdr2 Aly2_",
+              "9ArrD Qdr2 Ldb19 PYless_",
+              "9ArrD Qdr2 Ldb19_", 
+              "aly1Daly2D Qdr2 316",
+              "aly1Daly2D Qdr2 Aly1 PYless_",
+              "aly1Daly2D Qdr2 Aly1_",
+              "aly1Daly2D Qdr2 Aly2 PYless_",
+              "aly1Daly2D Qdr2 Aly2_",
+              "BY4741 Qdr2 316")
 sort_data(res, groups, name)
 ```
 
