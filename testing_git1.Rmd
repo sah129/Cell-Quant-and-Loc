@@ -14,16 +14,15 @@ datasetpath <- "Datasets/samp"
 ```
 
 
-```{r}
+```{r, warning = FALSE}
 
-options(warn = -1)
 start <- Sys.time()
 res <- pipeline(datasetpath, testing=FALSE, gui=FALSE, progress=NULL, interactive = FALSE, 4, gfp_channel, 100)
 end = Sys.time()
 
 print(paste0("Pipeline completed.  Processed ", length(res), " images in ", (end-start), " minutes."))
 
-options(warn=0)
+
 ```
 
 ```{r}

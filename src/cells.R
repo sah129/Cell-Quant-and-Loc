@@ -20,12 +20,14 @@ detect_membranes <-function(img, channels)
   list(removed = res$removed, membranes = res$membranes, FM = res$FM)
 }
 
-detect_membranes_new <-function(img, channels, factor, chan, cutoff)
+detect_membranes_new <-function(img, channels, factor, chan, cutoff, cnum)
 {
   message("\n########################CELLS########################")
   
  # chan <- normalize(chan)
   g <- gblur(chan*factor, sigma = 2)
+  
+ 
   
   ct = thresh(g)
   cm = bwlabel(ct)
@@ -35,7 +37,7 @@ detect_membranes_new <-function(img, channels, factor, chan, cutoff)
   message(paste0("Number of cells detected on first pass: ", length(table(cm))))
   
   membranes <- rmObjects(cm, noise)
-  res <- remove_edge_membranes(membranes, img, channels)
+  res <- remove_edge_membranes(membranes, img, channels, cnum)
   
   message(paste0("Number of cells after noise removal: ", length(table(membranes))))
   list(removed = res$removed, membranes = res$membranes, FM = res$FM)
@@ -43,13 +45,13 @@ detect_membranes_new <-function(img, channels, factor, chan, cutoff)
 # Removes detected membranes that intersect with image edges.  Saves removed
 # membranes and computes complete features on all membranes in reference to
 # unaltered GFP channel. 
-remove_edge_membranes <-function(membranes,img, channels)
+remove_edge_membranes <-function(membranes,img, channels, cnum)
 {
   contours <- ocontour(membranes)
   bound <- list(l = 3, # 3 pixel buffer to account for haze
-                r = dim(img[,,gfp_channel])[1]-3,
+                r = dim(img[,,cnum$gfp_channel])[1]-3,
                 t = 3,
-                b = dim(img[,,gfp_channel])[2]-3)
+                b = dim(img[,,cnum$gfp_channel])[2]-3)
   
   left <- lapply(contours, function(x){min(x[,1])})
   right <- lapply(contours, function(x){max(x[,1])})

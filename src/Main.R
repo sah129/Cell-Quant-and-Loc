@@ -7,14 +7,34 @@ source("src/functions.R")
 # gui:  set to true when using the GUI.  See app.R.
 # progress:  holds information for progress updates when using the GUI.
 # interactive:  set to manually prune results in GUI
-pipeline <- function(datasetpath, testing, gui, progress, interactive, factor, chan, cutoff)
+pipeline <- function(datasetpath, gui, progress, factor, gfp_chan, cmac_chan, dic_chan, alg, cutoff, outpath)
 {
+  
+  
+  cnum = list(
+    cmac_channel = as.numeric(cmac_chan),
+    gfp_channel = as.numeric(gfp_chan),
+    dic_channel = as.numeric(dic_chan)
+    
+  )
+  
+
+  
+  cn<<-cnum
+  
+  chan <- cnum$gfp_channel
+  if(alg == "DIC")
+    chan <- cnum$dic_channel
+  
+  
   unsuccessful = list()
   
-  if(testing)
-    return(readRDS("Demo/Saved Results/presentation_results.rds"))
   
   imageset <- read_in_imageset_files(datasetpath)
+  
+  p_inc <- 1/(nrow(imageset)*5)
+  
+  
   results = list()
   for( row in 1:nrow(imageset))
   {
@@ -23,36 +43,33 @@ pipeline <- function(datasetpath, testing, gui, progress, interactive, factor, c
         
       
     if(gui)
-      progress$inc(1/nrow(imageset), detail = paste0(imageset[row,"filename"], "(", row, "/",nrow(imageset),")" ))
+      progress$inc(p_inc, message = paste0(imageset[row,"filename"], " (", row, "/",nrow(imageset),")" ))
     
     channels <- read_in_channels(imageset[row,], datasetpath)
     img_gray <- convert_to_grayscale(channels)
    
-    membranes <- detect_membranes_new(img_gray, channels, factor, img_gray[,,chan], cutoff)
-    vacuoles <- find_vacuoles(membranes, img_gray, channels)
+    if(gui)
+      progress$inc(p_inc, detail = "Detecting cell membranes")
+    
+    membranes <- detect_membranes_new(img_gray, channels, as.numeric(factor), img_gray[,,chan], as.numeric(cutoff), cnum)
+    
+    if(gui)
+      progress$inc(p_inc, detail = "Detecting vacuoles")
+    vacuoles <- find_vacuoles(membranes, img_gray, channels, cnum)
+    
+    if(gui)
+      progress$inc(p_inc, detail = "Filtering cells")
+    
+    
     res <- exclude_and_bind(membranes, vacuoles)
+  
+    if(gui)
+      progress$inc(p_inc, detail = "Finishing quant")
     
-    if(interactive)
-      final <- get_first_pass(membranes,vacuoles,res)
-    else
-      final<-tidy_up(membranes,vacuoles,res)
+    final<-tidy_up(membranes,vacuoles,res)
+ 
     
-    if(nrow(final$df)==0)
-    {
-      mem_pts = NULL 
-      vac_pts = NULL
-    }
-    else
-    {
-      mem_pts = ocontour(final$membranes)
-      vac_pts = ocontour(final$vacuoles)
-    }
-    if(length(membranes$removed) > 0)
-      removed_pts = ocontour(membranes$removed)
-    else
-      removed_pts = NULL
-    
-    tiff(filename = paste0("FinalOutput/Images/",imageset[row, "filename"], "_final_results.tiff"))
+    tiff(filename = paste0(outpath,  "/", imageset[row, "filename"], "_image.tiff"))
     
     get_display_img(df = final$df,
                     membranes = final$membranes, 
@@ -67,7 +84,7 @@ pipeline <- function(datasetpath, testing, gui, progress, interactive, factor, c
                     showVacLabels = FALSE)
     dev.off()
     
-    write.csv(final$df, paste0("FinalOutput/Individual Spreadsheets/",imageset[row, "filename"], '_results.csv'), row.names=FALSE)
+    write.csv(final$df, paste0(outpath, "/", imageset[row, "filename"], '_quant.csv'), row.names=FALSE)
     results[[row]] <- list(df = final$df,
                      
                            filename = imageset[row, "filename"])
@@ -93,7 +110,7 @@ pipeline <- function(datasetpath, testing, gui, progress, interactive, factor, c
   for(file in unsuccessful)
     print(file)
   
-  fileConn<-file("FinalOutput/Bad Images.txt")
+  fileConn<-file(paste0(outpath, "/Bad Images.txt"))
   writeLines(unlist(unsuccessful), fileConn)
   close(fileConn)
   
