@@ -1,32 +1,3 @@
-Figure 4A:
-
-WT:  did not pick up a lot.  I can make changes to try and fix this if need be. 
-
-Figure 6D Folder still empty
-
-
-PUNCTA FOLDER:  imaging data/20-06-94/decon/maxIP
-
-
-
-BY4741
->        BY4741+GPI
->        Aly1
->        Aly1+GPI
->        Aly2
->        Aly2+GPI       
->        Aly1Aly2
->        Aly1Aly2+GPI
-
-
-"BY4741 PLC Delta", "alyaly2D PLC Delta CMAC", "aly1D PLC Delta CMAC", "aly1D PLC Delta GPI CMAC",
-
-"aly1Daly2D PLC Delta GPI CMAC", "aly2D PLC Delta CMAC", "aly2D PLC Delta GPI CMAC",
-
-"By4741 PLC Delta GPI CMAC"
-
-
-cutoff is 100 for Git1, 100 for pmvacquantratios
 
 
 IMAGEJ:
@@ -43,3 +14,12 @@ Idea for GUI:
 Have them set cutoff and choose sample image.  Run the image for 4 or 5 different brightness levels, display all at once.  Let them pick which one looks best. 
 
 Do this for DIC and GFP
+
+
+
+Write bad files to txt file 
+
+-solve sd issue in vacuole method 
+For tutorial:
+
+Increasing the brightness on the GFP algorithm means you're more likely to pick up something you should.  For the DIC algoritm, increasing the brightness means you're more likely to pick up something you shouldn't.  For this reason, for the GFP algorith, if both 8 and 16 look good to you, choose 16.  For DIC, if both 2 and 4 look good to you, choose 2.  

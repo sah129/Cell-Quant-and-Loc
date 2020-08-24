@@ -9,41 +9,32 @@ require(Hmisc)
 ```{r setup, include=FALSE}
 source('src/functions.R')
 source('src/Main.R')
-datasetpath <- "Datasets/complimentation/2020-08-20 Qdr2 complementation - colony A"
+datasetpath <- "Datasets/samp"
 
 ```
 
-"Datasets/Figure 2C Bul Data/Bul1-del"
-"Datasets/Figure 2C Bul Data/Bul1-del+Bul2-del"
-"Datasets/Figure 1C/9ArrD 316-9ArrD Aly1-9ArrD Aly2-9ArrD Csr2-9ArrD Ecm21"
 
 ```{r}
+
+options(warn = -1)
 start <- Sys.time()
-res <- pipeline(datasetpath, testing=FALSE, gui=FALSE, progress=NULL, interactive = FALSE, 16, gfp_channel, 1000)
+res <- pipeline(datasetpath, testing=FALSE, gui=FALSE, progress=NULL, interactive = FALSE, 4, gfp_channel, 100)
 end = Sys.time()
 
 print(paste0("Pipeline completed.  Processed ", length(res), " images in ", (end-start), " minutes."))
+
+options(warn=0)
 ```
 
 ```{r}
-#groups = list("9ArrD Ato2 A", "9ArrD Ato2 C", "BY4741 Ato2 A", "BY4741 Ato2 B", "ldb19D Ato2 A", "ldb19D Ato2 B")
-#groups = list("BY4741 Ctr1 A", "BY4741 Ctr1 B", "ldb19D Ctr1 A", "ldb19D Ctr1 B", "9ArrD Ctr1 C", "9ArrD Ctr1 D")
-#groups = list("9ArrD Pma1 A", "9ArrD Pma1 B", "aly1Daly2D Pma1 A", "aly1Daly2D Pma1 B", "BY4741 Pma1 A", "BY4741 Pma1 B", "ldb19D Pma1 A", "ldb19D Pma1 B")
-#groups = list("9ArrD Skg6 A", "9ArrD Skg6 B", "BY4741 Skg6 A", "BY4741 Skg6 B", "ldb19D Skg6 A", "ldb19D Skg6 B")
-name = "2020-08-20 Qdr2 Complementation - colony A"
-groups = list("9ArrD Qdr2 316", 
-             # "9ArrD Qdr2 Aly1 PYless_", 
-              "9ArrD Qdr2 Aly1_", 
-              "9ArrD Qdr2 Aly2 PYless_", 
-              "9ArrD Qdr2 Aly2_",
-              "9ArrD Qdr2 Ldb19 PYless_",
-              "9ArrD Qdr2 Ldb19_", 
-              "aly1Daly2D Qdr2 316",
-              "aly1Daly2D Qdr2 Aly1 PYless_",
-              "aly1Daly2D Qdr2 Aly1_",
-              "aly1Daly2D Qdr2 Aly2 PYless_",
-              "aly1Daly2D Qdr2 Aly2_",
-              "BY4741 Qdr2 316")
+
+name = "2020-08-14 FYVE (EEA1) GFP GPI"
+groups = list("9ArrD FYVE 0",
+              "9ArrD FYVE GPI_",
+              "BY4741 FYVE 0",
+              "BY4741 FYVE GPI_",
+              "ldb19D FYVE 0",
+              "ldb19D FYVE GPI_")
 sort_data(res, groups, name)
 ```
 
@@ -51,11 +42,11 @@ sort_data(res, groups, name)
 ```{r}
 
 grouped_path = paste0("FinalOutput/Aggregated Spreadsheets/", name, "_pm_vac_ratio_grouped.csv")
-#grouped_path = paste0("Graphs/",name,"_pm_vac_ratio_grouped.csv")
 df<-read.csv(grouped_path, check.names = FALSE)
 df
 
 ```
+
 ```{r}
 res_graph <- ggplot(data = melt(df), aes(x = variable, y = value))+
   geom_dotplot(binaxis="y", stackdir = "center", stackratio = 0.5, binwidth=0.01, alpha=0.5, aes(color=variable), dotsize = 1.5) + 

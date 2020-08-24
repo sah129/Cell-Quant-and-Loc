@@ -1,7 +1,7 @@
 
 ```{r}
 source('src/functions.R')
-datasetpath <- "Datasets/samp"
+datasetpath <- "Datasets/Git1/Figure 4A/Aly1"
 ```
 Figure 1B: sigma = .3, offset= 0.002, cutoff = 50
 
@@ -12,33 +12,13 @@ imageset <- read_in_imageset_files(datasetpath)
 channels <- read_in_channels(imageset[1,], datasetpath) #006
 img_gray <- convert_to_grayscale(channels)
 membranes <- detect_membranes_new(img_gray, channels,16, img_gray[,,gfp_channel],1000)
-vacuoles <- find_vacuoles(membranes, img_gray, channels)
+vacuoles <- find_vacuoles_alt(membranes, img_gray, channels)
 ```
 
 ```{r}
 res <- exclude_and_bind(membranes, vacuoles)
 final<-tidy_up(membranes,vacuoles,res)
 ```
-
-
-```{r}
-b <- max(membranes$FM[,"membrane.0.s.radius.min"]) 
-vmask = thresh(img_gray[,,cmac_channel],w=b,h=b,offset = 2*sd(img_gray[,,cmac_channel]))
-
-cn <- normalize(img_gray[,,cmac_channel])
-vacs <- cn > otsu(cn)
-
-t <- paintObjects(vmask, tgt = channel(cn, 'asblue'), col = 'yellow')
-tt <- paintObjects(vacs, tgt = channel(cn, 'asblue'), col = 'yellow')
-
-display(t)
-display(tt)
-```
-
-
-
-
-
 
 
 
@@ -48,25 +28,25 @@ display(d)
 ```
 
 
+
+
 ```{r}
-  
-chan <- normalize(img_gray[,,dic_channel])
-factor = 2
-cutoff  = 100
+pm_seg = membranes$membranes == 14  # isolate PM
+filled_seg = fillHull(pm_seg) # flood fill
+comp <- pm_seg == filled_seg
 
-g <- gblur(chan*factor, sigma = 2)
-
-ct = thresh(g)
-cm = bwlabel(ct)
-fm <- computeFeatures.shape(cm)
-noise <- which(fm[,"s.area"]< cutoff) # noise removal
-
-mems <- rmObjects(cm, noise)
-#res <- remove_edge_membranes(membranes, img, channels)
-display(mems)
+v_seg <-vacuoles$vacuoles*(filled_seg-pm_seg)
+vcount <- table(v_seg)
+vcount <- vcount[-1] 
 ```
 
 
+
+
+```{r}
+    if(length(which(pm_seg == 1)) > length(which(comp == FALSE)))
+      fragments[i] = i
+```
 
 
 
@@ -81,6 +61,16 @@ get_displ <- function(channels, final)
   return(tt)
 }
 ```
+
+
+
+```{r}
+v<- thresh(img_gray[,,cmac_channel])
+p<-paintObjects(v, tgt = channel(normalize(channels$cmac), 'asblue'), col = 'white')
+display(p)
+```
+
+
 
 
 

@@ -81,16 +81,24 @@ pipeline <- function(datasetpath, testing, gui, progress, interactive, factor, c
       print(paste0("Error analyzing ", imageset[row,"filename"]))
       print(cond)
       results[[row]] <- NULL
-      unsuccessful <- c(unsuccessful, imageset[row,"filename"])
+      unsuccessful <<- c(unsuccessful, imageset[[row,"filename"]])
+      
       
     }
     )
   }
   message("End of main")
   print("UNSUCCESSFUL FILES: ")
+
   for(file in unsuccessful)
     print(file)
-  return(results)
+  
+  fileConn<-file("FinalOutput/Bad Images.txt")
+  writeLines(unlist(unsuccessful), fileConn)
+  close(fileConn)
+  
+  
+    return(results)
 }
 
 

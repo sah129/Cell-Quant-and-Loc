@@ -27,6 +27,27 @@ find_vacuoles <- function(cell_info, img, channels)
   return(res)
 }
 
+find_vacuoles_alt <- function(cell_info, img, channels)
+{
+  message("######################VACUOLES#######################")
+  
+ 
+  
+  
+  vmask <- img[,,cmac_channel] > otsu(img[,,cmac_channel])
+  # Removes minor protrosions that are often a result of overflow PM 
+  # fluorescence.
+  vmask = opening(vmask, makeBrush(5,shape="disc"))
+  vmask = bwlabel(vmask)
+  
+  message(paste0("Number of vacuoles detected on first pass: ", format(length(table(vmask)), nsmall = 4)))
+  FV <- computeFeatures(vmask, ref= channels$ref_gfp, xname = "vac")
+  FV<-FV[,c("vac.a.b.mean", "vac.0.m.cx", "vac.0.m.cy", "vac.0.s.area")]
+  
+  res<-list(vacuoles = vmask, FV = FV)
+  return(res)
+}
+
 # Build the resultant data frame while examining and excluding candidate 
 # membranes and their associated vacuoles. Returns data frame, list of 
 # fragment PM objects, list of PMs where no vacuoles are found.
@@ -72,8 +93,11 @@ exclude_and_bind <- function(mems, vacs)
         # however in the interest of space/memory we will use precomputed 
         # areas in lieu of another fillHull operation.
         if(v_area/c_area < .25)
+        {
+          #print(paste0("ratio exclusion ", i))
           empty_cells[i] = i
-        else  # populate dataframe
+      }
+          else  # populate dataframe
         {
           cmpi <- mems$FM[i, 'membrane.a.b.mean']
           vmpi <- calc_vac_mpi(as.numeric(names(vcount)), vacs$FV)
