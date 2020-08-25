@@ -4,66 +4,68 @@ library(dplyr)
 library(stringr)
 library(gridExtra)
 library(shinyFiles)
+library(shinyjs)
+library(shinythemes)
 source('src/functions.R')
 source('src/Main.R')
 
 options(shiny.maxRequestSize = 100*1024^2)
 
-ui <- fluidPage(
+ui <- fluidPage( theme = shinytheme("slate"),
+  shinyjs::useShinyjs(),
   
-  titlePanel("Automated Cell Quant - O'Donnell Lab", windowTitle = "Automated Cell Quant - O'Donnell Lab"),
-  sidebarLayout(
-    sidebarPanel(
-      h4("Pipeline Options", align = "center"),
+  titlePanel(h1("Automated Cell Quant - O'Donnell Lab", align = "center"), windowTitle = "Automated Cell Quant - O'Donnell Lab"),
+
+    wellPanel(
+    #  h4("Pipeline Options", align = "center"),
       fluidRow(
         column(1, strong("1.")),
         
-        column(3, shinyDirButton('input_dir', 'Input Folder', 'Please select a folder')),
+        column(3, shinyDirButton('input_dir', 'Input Folder', 'Please select a folder', style = "width: 100%")),
         column(6, textOutput("input_dir_text")),  
         
         column(2, actionButton("inputdir_help", "?"))),
       fluidRow(
-      column(1, strong("1.")),
+      column(1, strong("2.")),
       
-      column(3, shinyDirButton('output_dir', 'Output Folder', 'Please select a folder')),
+      column(3, shinyDirButton('output_dir', 'Output Folder', 'Please select a folder', style = "width: 100%")),
       column(6, textOutput("output_dir_text")), 
       column(2, actionButton("outputdir_help", "?"))),
     
       fluidRow(
-        column(1, strong("2.")),
+        column(1, strong("3.")),
         column(3, textInput("cmac_chan", "CMAC", value = "", placeholder = "1")),
         column(3, textInput("gfp_chan", "GFP", value = "", placeholder = "2")),
         column(3, textInput("dic_chan", "DIC", value = "", placeholder = "3")),
         column(2, br(), actionButton("inputchannels_help", "?"))),
       fluidRow(
-        column(1, strong("3.")),
+        column(1, strong("4.")),
         column(9, textInput("cutoff_value", "Cell size cutoff", placeholder="100")),
         column(2, br(), actionButton("cutoffvalue_help", "?"))),
       
   
       
       fluidRow(
-        column(1, strong("4.")),
+        column(1, strong("5.")),
         column(9, radioButtons("algchoose", "Membrane Detection Algorithm", choices = c("GFP", "DIC"), selected = "GFP", inline = TRUE)),
         column(2, br(), actionButton("algchoose_help", "?"))),
       fluidRow(
-        column(1, strong("5.")),
+        column(1, strong("6.")),
         
-        column(9, radioButtons("factorchoose", "Factor:", choices = c("1", "2", "4", "8", "16"), selected = "5", inline = TRUE)),
+        column(9, radioButtons("factorchoose", "Factor:", choices = c("1", "2", "3", "4", "5"), selected = "5", inline = TRUE)),
         
         
         column(2, br(), actionButton("factorchoose_help", "?"))),
-      fluidRow(actionButton("run", "Run Pipeline"), align = "center"),
-      width=4),
-    mainPanel(
+      fluidRow(column(9, offset = 1, actionButton("run", "Run Pipeline", width = "100%")))
+    
    
       
-      width = 8)
+      
+    )
     
     
     
-    
-  )
+  
   
   )
 
@@ -71,7 +73,7 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   
   values <- reactiveValues()
-  volumes = c(home = getwd())
+  volumes = c(home = getwd(), root = getVolumes()())
   
 
   shinyDirChoose(input, 'input_dir', roots= volumes, session = session)
@@ -149,14 +151,35 @@ server <- function(input, output, session) {
          print('null')
          return(NULL)
        }
-       
+       else if( !(str_trim(input$cmac_chan) %in% c("1", "2", "3")))
+       {
+         showModal(modalDialog(title = "Invalid Input", "Invalid value for CMAC channel.", easyClose = TRUE, footer = NULL))
+       }
+       else if( !(str_trim(input$gfp_chan) %in% c("1", "2", "3")))
+       {
+         showModal(modalDialog(title = "Invalid Input", "Invalid value for GFP channel.", easyClose = TRUE, footer = NULL))
+       }
+       else if( !(str_trim(input$dic_chan) %in% c("1", "2", "3", "")))
+       {
+         showModal(modalDialog(title = "Invalid Input", "Invalid value for DIC channel.", easyClose = TRUE, footer = NULL))
+       }
+       else if(any(duplicated(c(input$cmac_chan, input$dic_chan, input$gfp_chan))))
+       {
+         showModal(modalDialog(title="Invalid Input", "Different channels cannot have the same value", easyClose = TRUE, footer = NULL))
+       }
+       else
+       {
        progress <- shiny::Progress$new()
        
        on.exit(progress$close())
        
-       progress$set(message = "Running Test Cases...", value = 0)
+       progress$set(message = "Setting up...", value = 0)
        
-       values$res <- pipeline(dpath(),
+       
+       withCallingHandlers(
+      {
+        shinyjs::html("stream_main", "")
+         values$res <-pipeline(dpath(),
                               gui=TRUE, 
                               progress=progress, 
                               factor = input$factorchoose, 
@@ -166,6 +189,12 @@ server <- function(input, output, session) {
                               alg = input$algchoose,
                               cutoff = input$cutoff_value,
                               outpath = opath()) 
+         
+      },
+      message = function(m) {
+        shinyjs::html(id = "stream_main", html = m$message, add = TRUE) #save the logfile somewhere
+        values$log <- paste0(values$log, m$message)
+      })
        
        showModal(modalDialog(
          title = "Pipeline Complete!",
@@ -174,15 +203,19 @@ server <- function(input, output, session) {
          footer = NULL
        ))
        
+       fileConn<-file(paste0(opath(), "/log.txt"))
+       writeLines(values$log, fileConn)
+       close(fileConn)
+       
+       
+       
+       
+       
+       }
      })
-
-  # output$contents <- renderUI(
   
-  #  if(is.null(values$res))
-  #       return(NULL)
-  #else
-  #  return(uiOutput(textOutput("DONE")))
-  #  )
+
+
   
   
   

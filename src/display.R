@@ -29,13 +29,13 @@ renumerate_df <- function(df)
   if(any(is.na(df['CellID'])))
   {
     df = drop_na(df)
-    message('renumerating cell ids')
+    message('Renumerating cell ids')
     if(nrow(df) > 0)
     {
       df['CellID'] = seq(1:nrow(df))
     }
   }
-  message('reenumerating vacuoles')
+  message('Reenumerating vacuoles\n')
   if(nrow(df) > 0)
   {
     df['vacuoles'] = seq((nrow(df)+1),2*nrow(df))

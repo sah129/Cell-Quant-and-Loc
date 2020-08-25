@@ -9,8 +9,8 @@ source("src/functions.R")
 # interactive:  set to manually prune results in GUI
 pipeline <- function(datasetpath, gui, progress, factor, gfp_chan, cmac_chan, dic_chan, alg, cutoff, outpath)
 {
-  
-  
+
+
   cnum = list(
     cmac_channel = as.numeric(cmac_chan),
     gfp_channel = as.numeric(gfp_chan),
@@ -19,8 +19,12 @@ pipeline <- function(datasetpath, gui, progress, factor, gfp_chan, cmac_chan, di
   )
   
 
-  
-  cn<<-cnum
+  fact <- switch(factor,
+                 "1" = 1,
+                 "2" = 2,
+                 "3" = 4,
+                 "4" = 8,
+                 "5" = 16)
   
   chan <- cnum$gfp_channel
   if(alg == "DIC")
@@ -45,13 +49,13 @@ pipeline <- function(datasetpath, gui, progress, factor, gfp_chan, cmac_chan, di
     if(gui)
       progress$inc(p_inc, message = paste0(imageset[row,"filename"], " (", row, "/",nrow(imageset),")" ))
     
-    channels <- read_in_channels(imageset[row,], datasetpath)
+    channels <- read_in_channels(imageset[row,], datasetpath, cnum)
     img_gray <- convert_to_grayscale(channels)
    
     if(gui)
       progress$inc(p_inc, detail = "Detecting cell membranes")
     
-    membranes <- detect_membranes_new(img_gray, channels, as.numeric(factor), img_gray[,,chan], as.numeric(cutoff), cnum)
+    membranes <- detect_membranes_new(img_gray, channels, fact, img_gray[,,chan], as.numeric(cutoff), cnum)
     
     if(gui)
       progress$inc(p_inc, detail = "Detecting vacuoles")
@@ -95,8 +99,8 @@ pipeline <- function(datasetpath, gui, progress, factor, gfp_chan, cmac_chan, di
       },
     error = function(cond)
     {
-      print(paste0("Error analyzing ", imageset[row,"filename"]))
-      print(cond)
+      message(paste0("Error analyzing ", imageset[row,"filename"]))
+      #message(cond)
       results[[row]] <- NULL
       unsuccessful <<- c(unsuccessful, imageset[[row,"filename"]])
       
@@ -105,16 +109,14 @@ pipeline <- function(datasetpath, gui, progress, factor, gfp_chan, cmac_chan, di
     )
   }
   message("End of main")
-  print("UNSUCCESSFUL FILES: ")
 
-  for(file in unsuccessful)
-    print(file)
   
   fileConn<-file(paste0(outpath, "/Bad Images.txt"))
   writeLines(unlist(unsuccessful), fileConn)
   close(fileConn)
   
   
+
     return(results)
 }
 

@@ -72,27 +72,27 @@ read_in_channels_old <- function(imageset, datasetpath)
   list(cmac = cmac, gfp = gfp, ref_cmac = ref_cmac, ref_gfp = ref_gfp)
 }
 
-read_in_channels <- function(imageset, datasetpath)
+read_in_channels <- function(imageset, datasetpath, cnum)
 {
   message("#####################################################")
   message(paste0("Examining image: ", imageset["filename"]))
   
   img <- readImage(file.path(paste0(datasetpath, "/", imageset["filepath"])))
   
-  gfp <- img[,,2]
-  cmac <- img[,,1]
+  gfp <- img[,,cnum$gfp_channel]
+  cmac <- img[,,cnum$cmac_channel]
   dic <- NULL
   
   ref_img <- readImage(file.path(paste0(datasetpath, "/", imageset["filepath"])),  as.is = TRUE)
   
-  ref_gfp <- ref_img[,,2]
-  ref_cmac <- ref_img[,,1]
+  ref_gfp <- ref_img[,,cnum$gfp_channel]
+  ref_cmac <- ref_img[,,cnum$cmac_channel]
   ref_dic <- NULL
   
-  if(numberOfFrames(img) == 3)
+  if(length(cnum$dic_channel) != 0)
   {
-      dic <- img[,,3]
-      ref_dic <- ref_img[,,3]
+      dic <- img[,,cnum$dic_channel]
+      ref_dic <- ref_img[,,cnum$dic_channel]
   }
   
   list(cmac = cmac, 

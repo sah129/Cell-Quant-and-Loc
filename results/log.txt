@@ -1,0 +1,20 @@
+#####################################################
+Examining image: A1A2_Git1_A1_Time60_001
+
+########################CELLS########################
+Number of cells detected on first pass: 1321
+Number of cells after noise removal: 22
+######################VACUOLES#######################
+Number of vacuoles detected on first pass: 227
+renumerating cell ids
+reenumerating vacuoles
+#####################################################
+Examining image: bad
+
+########################CELLS########################
+Number of cells detected on first pass: 11
+Number of cells after noise removal: 1
+######################VACUOLES#######################
+Error analyzing bad
+End of main
+
