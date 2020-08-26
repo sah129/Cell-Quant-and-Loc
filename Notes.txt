@@ -23,3 +23,8 @@ Write bad files to txt file
 For tutorial:
 
 Increasing the brightness on the GFP algorithm means you're more likely to pick up something you should.  For the DIC algoritm, increasing the brightness means you're more likely to pick up something you shouldn't.  For this reason, for the GFP algorith, if both 8 and 16 look good to you, choose 16.  For DIC, if both 2 and 4 look good to you, choose 2.  
+
+
+stop button
+
+log file 
