@@ -9,7 +9,7 @@ require(Hmisc)
 ```{r setup, include=FALSE}
 source('src/functions.R')
 source('src/Main.R')
-datasetpath <- "Datasets/samp"
+datasetpath <- "Datasets/Git1/Figure 4A/Aly1"
 
 ```
 
@@ -19,7 +19,7 @@ pipeline <- function(datasetpath, gui, progress, factor, gfp_chan, cmac_chan, di
 ```{r, warning = FALSE}
 
 start <- Sys.time()
-res <- pipeline(datasetpath, gui=FALSE, progress=NULL, factor= 16, gfp_chan = 2, cmac_chan= 1, dic_chan = 3, alg = "GFP", cutoff = 1000, outpath = "FinalOutput")
+res <- pipeline(datasetpath, gui=FALSE, progress=NULL, factor= 5, gfp_chan = "2", cmac_chan= "1", dic_chan = NULL, alg = "GFP", cutoff = "1000", outpath = "FinalOutput")
 end = Sys.time()
 
 print(paste0("Pipeline completed.  Processed ", length(res), " images in ", (end-start), " minutes."))

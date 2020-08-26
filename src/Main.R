@@ -65,7 +65,7 @@ pipeline <- function(datasetpath, gui, progress, factor, gfp_chan, cmac_chan, di
       progress$inc(p_inc, detail = "Filtering cells")
     
     
-    res <- exclude_and_bind(membranes, vacuoles)
+    res <- exclude_and_bind(membranes, vacuoles, as.numeric(cutoff))
   
     if(gui)
       progress$inc(p_inc, detail = "Finishing quant")

@@ -55,7 +55,7 @@ find_vacuoles_alt <- function(cell_info, img, channels)
 # Build the resultant data frame while examining and excluding candidate 
 # membranes and their associated vacuoles. Returns data frame, list of 
 # fragment PM objects, list of PMs where no vacuoles are found.
-exclude_and_bind <- function(mems, vacs)
+exclude_and_bind <- function(mems, vacs, cutoff)
 {
 
   df <- data.frame(matrix(NA, nrow = length(table(mems$membranes)), ncol = 9))
@@ -104,7 +104,7 @@ exclude_and_bind <- function(mems, vacs)
         # The area of the filled membrane would be a much better metric, 
         # however in the interest of space/memory we will use precomputed 
         # areas in lieu of another fillHull operation.
-        if(v_area/c_area < .05)
+        if(v_area < (cutoff/10))
         {
           empty_cells[i] = i
       }
