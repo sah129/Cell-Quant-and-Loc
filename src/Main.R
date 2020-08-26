@@ -79,10 +79,10 @@ pipeline <- function(datasetpath, gui, progress, factor, gfp_chan, cmac_chan, di
                     membranes = final$membranes, 
                     col_membranes = 'white', 
                     vacuoles = final$vacuoles, 
-                    col_vacuoles ='yellow', 
+                    col_vacuoles ='blue', 
                     removed = membranes$removed,
                     closed_vacuoles = TRUE, 
-                    img = channels$gfp, 
+                    img = img_gray[,,cnum$gfp_channel], 
                     showRemoved = FALSE, 
                     showMemLabels = TRUE, 
                     showVacLabels = FALSE)
@@ -100,7 +100,7 @@ pipeline <- function(datasetpath, gui, progress, factor, gfp_chan, cmac_chan, di
     error = function(cond)
     {
       message(paste0("Error analyzing ", imageset[row,"filename"]))
-      #message(cond)
+      message(cond)
       results[[row]] <- NULL
       unsuccessful <<- c(unsuccessful, imageset[[row,"filename"]])
       
@@ -112,7 +112,10 @@ pipeline <- function(datasetpath, gui, progress, factor, gfp_chan, cmac_chan, di
 
   
   fileConn<-file(paste0(outpath, "/Bad Images.txt"))
-  writeLines(unlist(unsuccessful), fileConn)
+  if(length(unsuccessful) > 0)
+    writeLines(unlist(unsuccessful), fileConn)
+  else
+    writeLines("No unquantified images.", fileConn)
   close(fileConn)
   
   

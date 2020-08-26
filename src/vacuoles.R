@@ -76,8 +76,7 @@ exclude_and_bind <- function(mems, vacs)
     
     if(any(pm_seg*vacs$vacuoles) == 1)
     {
-        empty_cells[i] = i      
-        print(paste0('intersection', i))
+        fragments[i] = i      
     }
     # If # of pixels in PM is greater than intersection complement, add to 
     # fragment list.  This technique allows whole PMS with some 
@@ -107,7 +106,6 @@ exclude_and_bind <- function(mems, vacs)
         # areas in lieu of another fillHull operation.
         if(v_area/c_area < .05)
         {
-          print(paste0("ratio exclusion ", i))
           empty_cells[i] = i
       }
           else  # populate dataframe

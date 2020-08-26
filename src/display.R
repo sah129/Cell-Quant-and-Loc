@@ -92,6 +92,7 @@ get_final_vac_img <- function(vacs, res)
 
 get_display_img <- function(df,membranes, col_membranes, vacuoles, col_vacuoles, removed,closed_vacuoles, img, showRemoved, showMemLabels, showVacLabels)
 {
+  img <- channel(img, 'rgb')
   if(nrow(df)==0) # nothing detected
   {
     plot(img)
@@ -101,7 +102,7 @@ get_display_img <- function(df,membranes, col_membranes, vacuoles, col_vacuoles,
     res_imgA <- paintObjects(membranes, tgt = img, col = c(col_membranes, col_membranes))
     vac_col <- col_vacuoles
     if(closed_vacuoles)
-      vac_col <- c(col_vacuoles,col_vacuoles)
+      vac_col <- c('yellow',col_vacuoles)
     res_img <- paintObjects(vacuoles, tgt = res_imgA, col = vac_col)
     if(showRemoved)
       res_img <- paintObjects(removed, tgt = res_img, col = c('red','red'))

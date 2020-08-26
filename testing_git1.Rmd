@@ -13,11 +13,13 @@ datasetpath <- "Datasets/samp"
 
 ```
 
+pipeline <- function(datasetpath, gui, progress, factor, gfp_chan, cmac_chan, dic_chan, alg, cutoff, outpath)
+
 
 ```{r, warning = FALSE}
 
 start <- Sys.time()
-res <- pipeline(datasetpath, testing=FALSE, gui=FALSE, progress=NULL, interactive = FALSE, 4, gfp_channel, 100)
+res <- pipeline(datasetpath, gui=FALSE, progress=NULL, factor= 16, gfp_chan = 2, cmac_chan= 1, dic_chan = 3, alg = "GFP", cutoff = 1000, outpath = "FinalOutput")
 end = Sys.time()
 
 print(paste0("Pipeline completed.  Processed ", length(res), " images in ", (end-start), " minutes."))

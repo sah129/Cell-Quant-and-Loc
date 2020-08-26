@@ -8,11 +8,13 @@ Figure 1B: sigma = .3, offset= 0.002, cutoff = 50
 "C:\Users\Sarah's Computer\Desktop\Git1 Quant\Sarah\Results No Settings-NewVac\Figure 2C\Images\aly2-del_415Git1_003_final_results.tiff"
 
 ```{r, echo = FALSE}
+
+cnum = list(cmac_channel = 1, gfp_channel = 2, dic_channel = NULL)
 imageset <- read_in_imageset_files(datasetpath)
-channels <- read_in_channels(imageset[1,], datasetpath) #006
+channels <- read_in_channels(imageset[1,], datasetpath, cnum) #006
 img_gray <- convert_to_grayscale(channels)
-membranes <- detect_membranes_new(img_gray, channels,16, img_gray[,,gfp_channel],1000)
-vacuoles <- find_vacuoles_alt(membranes, img_gray, channels)
+membranes <- detect_membranes_new(img_gray, channels,16, img_gray[,,cnum$gfp_channel],1000, cnum)
+vacuoles <- find_vacuoles(membranes, img_gray, channels, cnum)
 ```
 
 ```{r}
@@ -30,25 +32,6 @@ display(d)
 
 
 
-```{r}
-pm_seg = membranes$membranes == 14  # isolate PM
-filled_seg = fillHull(pm_seg) # flood fill
-comp <- pm_seg == filled_seg
-
-v_seg <-vacuoles$vacuoles*(filled_seg-pm_seg)
-vcount <- table(v_seg)
-vcount <- vcount[-1] 
-```
-
-
-
-
-```{r}
-    if(length(which(pm_seg == 1)) > length(which(comp == FALSE)))
-      fragments[i] = i
-```
-
-
 
 
 
@@ -56,8 +39,12 @@ vcount <- vcount[-1]
 ```{r}
 get_displ <- function(channels, final)
 {
-  t<-paintObjects(final$membranes, tgt = channel(normalize(channels$gfp), 'asgreen'), col = c('white','white'))
-  tt<-paintObjects(final$vacuoles, tgt = t, col = 'yellow')
+  tg <- img_gray[,,cnum$gfp_channel]
+  tg <- channel(tg, 'rgb')
+  
+  t<-paintObjects(final$membranes, tgt = tg, col = c('white','white'))
+  tt<-paintObjects(final$vacuoles, tgt = t, col = c('yellow', 'red'))
+ 
   return(tt)
 }
 ```
@@ -70,73 +57,51 @@ p<-paintObjects(v, tgt = channel(normalize(channels$cmac), 'asblue'), col = 'whi
 display(p)
 ```
 
-
-
-
-
-
-
-
-
 ```{r}
- # c<-clahe(ngfp, nx = 4, ny = 4, limit=2, keep.range = TRUE)
-  g <- gblur(img_gray[,,gfp_channel]*16, sigma = 2)
-  ct = thresh(g)
-  cm = bwlabel(ct)
-  fm <- computeFeatures.shape(cm)
-  noise <- which(fm[,"s.area"]< 100) # noise removal
+  b <- max(membranes$FM[,"membrane.0.s.radius.min"]) 
   
-  m <- rmObjects(cm, noise)
-  display(m)
+  # Threshold with an adaptive window and an offset 2 std. dev. from the norm.
+  # This is sufficient to pick up only the brightest spots while excluding 
+  # haze. 
+  vmask = thresh(img_gray[,,cnum$cmac_channel],w=b,h=b,offset = 2*sd(img_gray[,,cnum$cmac_channel]))
+```
+
+
+
+```{r}
+b <- max(membranes$FM[,"membrane.0.s.radius.min"]) 
+vmask = thresh(img_gray[,,cnum$cmac_channel],w=b,h=b,offset = 2*sd(img_gray[,,cnum$cmac_channel]))
+vmask <- fillHull(membranes$membranes)*vmask
+vmask = bwlabel(vmask)
   
-  res<-remove_edge_membranes(m, img_gray, channels)
-  display(res$membranes)
-```
 
-```{r}
-display(img_gray[,,gfp_channel])
-```
-
-```{r}
-res$df
-```
-
-
-
-```{r}
-display(res$membranes)
-```
-
-```{r}
-detect_membranes_alternate <- function(channels)
-{
-    cmac <- normalize(channels$cmac*16)
-    gfp <- normalize(channels$gfp)
-    
-    vacs <- cmac > otsu(cmac)
-    gfp <- gfp*(1-vacs)
-    mems <- thresh(gfp)
-    return(mems)
-}
-
-```
-
-```{r}
-mems <- detect_membranes_alternate(channels)
 ```
 
 
 ```{r}
-p<-paintObjects(mems, tgt = channels$gfp, col = c('white','white'))
+intersection = fillHull(membranes$membranes)*vmask
+display(intersection)
+```
+
+
+```{r}
+p<-paintObjects(vmask, tgt = channel(membranes$membranes, 'asgreen'), col = c('red'))
 display(p)
 ```
 
 
+```{r}
+for(i in seq(1:length(table(membranes$membranes))))
+{
+  mseg<- membranes$membranes == i
+  if(any(mseg*vmask) == 1)
+    print(paste0('intersection', i))
+}
+```
 
 
 ```{r}
-v<-paintObjects(vacuoles$vacuoles, tgt = normalize(channel(channels$cmac, 'asblue')), col = 'yellow')
-display(v)
+display(membranes$membranes == 9)
 ```
 
 
@@ -155,41 +120,6 @@ get_display_img(df = final$df,
                 showMemLabels = TRUE, 
                 showVacLabels = FALSE)
 ```
-
-
-```{r}
-m1 <- final$membranes == 31
-m2<- final$membranes == 24
-v1<-final$vacuoles==38
-v2<-final$vacuoles==30
-```
-
-
-
-
-
-
-
-```{r}
-cells_blurred = gblur(img_gray[,,gfp_channel], sigma = .5)
-ct = thresh(cells_blurred, offset = 0.002)
-
-cm = bwlabel(ct)
-FS = computeFeatures.shape(cm)
-sel <- which(FS[,"s.area"] < 600)
-membranes <-rmObjects(cm, sel)
-display(membranes)
-```
-
-
-
-
-
-
-
-
-
-
 
 
 
